@@ -7,6 +7,7 @@ interface AreaState {
   loaded: boolean;
   loadAreas: () => Promise<void>;
   addArea: (name: string) => Promise<Area>;
+  updateArea: (id: string, changes: Partial<Area>) => Promise<void>;
   removeArea: (id: string) => Promise<void>;
 }
 
@@ -23,6 +24,13 @@ export const useAreaStore = create<AreaState>((set) => ({
     const area = await areaRepository.create(name);
     set((state) => ({ areas: [...state.areas, area] }));
     return area;
+  },
+
+  updateArea: async (id, changes) => {
+    await areaRepository.update(id, changes);
+    set((state) => ({
+      areas: state.areas.map((a) => (a.id === id ? { ...a, ...changes } : a)),
+    }));
   },
 
   removeArea: async (id) => {

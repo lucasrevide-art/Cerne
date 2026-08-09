@@ -16,6 +16,7 @@ export const areaRepository = {
       name,
       color: "",
       icon: "",
+      notes: "",
       sortOrder: Date.now(),
     };
     await db.areas.add(area);

@@ -1,3 +1,30 @@
+.cerne-area-view__notes {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  min-height: 140px;
+  margin-bottom: var(--space-6);
+  padding: var(--space-4);
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  resize: vertical;
+}
+
+.cerne-area-view__notes::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.cerne-area-view__notes:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
 .cerne-area-view__projects {
   display: flex;
   flex-wrap: wrap;

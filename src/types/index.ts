@@ -61,6 +61,7 @@ export interface Area {
   name: string;
   color: string;
   icon: string;
+  notes: string;
   sortOrder: number;
 }
 
