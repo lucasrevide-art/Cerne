@@ -8,12 +8,21 @@ export type FixedView =
   | "someday"
   | "logbook";
 
+export type Route =
+  | { type: "fixed"; view: FixedView }
+  | { type: "area"; areaId: string }
+  | { type: "project"; projectId: string };
+
 interface NavigationState {
-  activeView: FixedView;
-  setActiveView: (view: FixedView) => void;
+  route: Route;
+  setFixedView: (view: FixedView) => void;
+  setArea: (areaId: string) => void;
+  setProject: (projectId: string) => void;
 }
 
 export const useNavigationStore = create<NavigationState>((set) => ({
-  activeView: "inbox",
-  setActiveView: (view) => set({ activeView: view }),
+  route: { type: "fixed", view: "inbox" },
+  setFixedView: (view) => set({ route: { type: "fixed", view } }),
+  setArea: (areaId) => set({ route: { type: "area", areaId } }),
+  setProject: (projectId) => set({ route: { type: "project", projectId } }),
 }));

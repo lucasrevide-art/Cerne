@@ -1,0 +1,17 @@
+.cerne-logbook {
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.cerne-logbook__date {
+  margin-bottom: var(--space-2);
+}
+
+.cerne-logbook__rows {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  padding: var(--space-2);
+}

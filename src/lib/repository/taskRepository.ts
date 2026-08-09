@@ -5,7 +5,7 @@ function createId(): string {
   return crypto.randomUUID();
 }
 
-interface CreateTaskInput {
+interface CreateTaskInput extends Partial<Task> {
   title: string;
 }
 
@@ -24,16 +24,16 @@ export const taskRepository = {
     const task: Task = {
       id: createId(),
       title: input.title,
-      notes: "",
-      when: null,
-      whenDate: null,
-      deadline: null,
+      notes: input.notes ?? "",
+      when: input.when ?? null,
+      whenDate: input.whenDate ?? null,
+      deadline: input.deadline ?? null,
       status: "open",
-      priority: 0,
-      type: "default",
-      projectId: null,
-      areaId: null,
-      tagIds: [],
+      priority: input.priority ?? 0,
+      type: input.type ?? "default",
+      projectId: input.projectId ?? null,
+      areaId: input.areaId ?? null,
+      tagIds: input.tagIds ?? [],
       createdAt: now,
       completedAt: null,
       sortOrder: Date.now(),

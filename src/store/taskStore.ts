@@ -7,7 +7,7 @@ interface TaskState {
   subtasksByTask: Record<string, Subtask[]>;
   loaded: boolean;
   loadTasks: () => Promise<void>;
-  addTask: (title: string) => Promise<void>;
+  addTask: (title: string, overrides?: Partial<Task>) => Promise<void>;
   updateTask: (id: string, changes: Partial<Task>) => Promise<void>;
   toggleComplete: (id: string) => Promise<void>;
   removeTask: (id: string) => Promise<void>;
@@ -33,8 +33,8 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     set({ tasks, subtasksByTask, loaded: true });
   },
 
-  addTask: async (title) => {
-    const task = await taskRepository.create({ title });
+  addTask: async (title, overrides) => {
+    const task = await taskRepository.create({ title, ...overrides });
     set((state) => ({ tasks: [task, ...state.tasks] }));
   },
 

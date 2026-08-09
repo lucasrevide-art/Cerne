@@ -1,5 +1,6 @@
-import { useState, type ReactElement } from "react";
+import type { ReactElement } from "react";
 import { useNavigationStore, type FixedView } from "../store/navigationStore";
+import { AreaNavList } from "../features/areas/AreaNavList";
 import {
   InboxIcon,
   SunIcon,
@@ -7,8 +8,6 @@ import {
   AnytimeIcon,
   SomedayIcon,
   LogbookIcon,
-  AreasIcon,
-  ChevronRightIcon,
 } from "../components/icons";
 import "./Sidebar.css";
 
@@ -27,9 +26,8 @@ const topEntries: NavEntry[] = [
 ];
 
 export function Sidebar() {
-  const activeView = useNavigationStore((s) => s.activeView);
-  const setActiveView = useNavigationStore((s) => s.setActiveView);
-  const [areasExpanded, setAreasExpanded] = useState(true);
+  const route = useNavigationStore((s) => s.route);
+  const setFixedView = useNavigationStore((s) => s.setFixedView);
 
   return (
     <nav className="cerne-sidebar" aria-label="Navegação principal">
@@ -43,9 +41,11 @@ export function Sidebar() {
             <button
               type="button"
               className={`cerne-sidebar__item${
-                activeView === id ? " cerne-sidebar__item--active" : ""
+                route.type === "fixed" && route.view === id
+                  ? " cerne-sidebar__item--active"
+                  : ""
               }`}
-              onClick={() => setActiveView(id)}
+              onClick={() => setFixedView(id)}
             >
               <Icon width={18} height={18} />
               <span>{label}</span>
@@ -56,29 +56,7 @@ export function Sidebar() {
 
       <div className="cerne-sidebar__divider" />
 
-      <div className="cerne-sidebar__section">
-        <button
-          type="button"
-          className="cerne-sidebar__section-header"
-          onClick={() => setAreasExpanded((v) => !v)}
-          aria-expanded={areasExpanded}
-        >
-          <ChevronRightIcon
-            width={12}
-            height={12}
-            className={`cerne-sidebar__chevron${
-              areasExpanded ? " cerne-sidebar__chevron--expanded" : ""
-            }`}
-          />
-          <AreasIcon width={16} height={16} />
-          <span>Areas</span>
-        </button>
-        {areasExpanded && (
-          <p className="cerne-sidebar__section-empty">
-            Nenhuma área ainda — chega na Fase 3.
-          </p>
-        )}
-      </div>
+      <AreaNavList />
 
       <div className="cerne-sidebar__divider" />
 
@@ -87,9 +65,11 @@ export function Sidebar() {
           <button
             type="button"
             className={`cerne-sidebar__item${
-              activeView === "logbook" ? " cerne-sidebar__item--active" : ""
+              route.type === "fixed" && route.view === "logbook"
+                ? " cerne-sidebar__item--active"
+                : ""
             }`}
-            onClick={() => setActiveView("logbook")}
+            onClick={() => setFixedView("logbook")}
           >
             <LogbookIcon width={18} height={18} />
             <span>Logbook</span>

@@ -1,6 +1,8 @@
 import { useState, type FormEvent, type MouseEvent } from "react";
 import type { Task, TaskWhen, Subtask } from "../../types";
 import { useTaskStore } from "../../store/taskStore";
+import { useAreaStore } from "../../store/areaStore";
+import { useProjectStore } from "../../store/projectStore";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 import { TaskRow } from "../../components/TaskRow";
@@ -34,6 +36,8 @@ export function TaskEditor({ task, onClose }: TaskEditorProps) {
   const subtasks = useTaskStore(
     (s) => s.subtasksByTask[task.id] ?? EMPTY_SUBTASKS,
   );
+  const areas = useAreaStore((s) => s.areas);
+  const projects = useProjectStore((s) => s.projects);
   const addSubtask = useTaskStore((s) => s.addSubtask);
   const toggleSubtask = useTaskStore((s) => s.toggleSubtask);
   const removeSubtask = useTaskStore((s) => s.removeSubtask);
@@ -105,6 +109,49 @@ export function TaskEditor({ task, onClose }: TaskEditorProps) {
             updateTask(task.id, { deadline: e.target.value || null })
           }
         />
+      </div>
+
+      <div className="cerne-task-editor__field">
+        <span className="text-caption">Área / Projeto</span>
+        <select
+          className="cerne-task-editor__select"
+          value={task.projectId ? `project:${task.projectId}` : task.areaId ? `area:${task.areaId}` : ""}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (!value) {
+              updateTask(task.id, { areaId: null, projectId: null });
+            } else if (value.startsWith("area:")) {
+              updateTask(task.id, { areaId: value.slice(5), projectId: null });
+            } else if (value.startsWith("project:")) {
+              updateTask(task.id, { areaId: null, projectId: value.slice(8) });
+            }
+          }}
+        >
+          <option value="">Nenhum (Inbox)</option>
+          {areas.map((area) => (
+            <optgroup key={area.id} label={area.name}>
+              <option value={`area:${area.id}`}>{area.name} (direto)</option>
+              {projects
+                .filter((p) => p.areaId === area.id)
+                .map((project) => (
+                  <option key={project.id} value={`project:${project.id}`}>
+                    {project.name}
+                  </option>
+                ))}
+            </optgroup>
+          ))}
+          {projects.filter((p) => p.areaId === null).length > 0 && (
+            <optgroup label="Sem área">
+              {projects
+                .filter((p) => p.areaId === null)
+                .map((project) => (
+                  <option key={project.id} value={`project:${project.id}`}>
+                    {project.name}
+                  </option>
+                ))}
+            </optgroup>
+          )}
+        </select>
       </div>
 
       <div className="cerne-task-editor__field">

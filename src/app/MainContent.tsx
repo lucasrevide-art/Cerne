@@ -1,74 +1,162 @@
-import type { ReactElement } from "react";
-import { useNavigationStore, type FixedView } from "../store/navigationStore";
-import { EmptyState } from "../components/EmptyState";
+import { useNavigationStore } from "../store/navigationStore";
+import { useTaskStore } from "../store/taskStore";
+import { useAreaStore } from "../store/areaStore";
+import { useProjectStore } from "../store/projectStore";
 import { TaskList } from "../features/tasks/TaskList";
+import { LogbookList } from "../features/tasks/LogbookList";
+import { AreaView } from "../features/areas/AreaView";
+import { ProjectView } from "../features/projects/ProjectView";
+import {
+  isInboxTask,
+  isTodayTask,
+  isUpcomingTask,
+  isAnytimeTask,
+  isSomedayTask,
+  isLogbookTask,
+  sortTodayTasks,
+  sortUpcomingTasks,
+} from "../features/tasks/taskFilters";
 import {
   InboxIcon,
   SunIcon,
   UpcomingIcon,
   AnytimeIcon,
   SomedayIcon,
-  LogbookIcon,
 } from "../components/icons";
 import "./MainContent.css";
 
-const viewCopy: Record<
-  FixedView,
-  { label: string; description: string; icon: (props: { width?: number; height?: number }) => ReactElement }
-> = {
-  inbox: {
-    label: "Inbox",
-    description: "Captura bruta, ainda não classificada.",
-    icon: InboxIcon,
-  },
-  today: {
-    label: "Today",
-    description: "O compromisso de hoje.",
-    icon: SunIcon,
-  },
-  upcoming: {
-    label: "Upcoming",
-    description: "O que vem pela frente.",
-    icon: UpcomingIcon,
-  },
-  anytime: {
-    label: "Anytime",
-    description: "Backlog ativo, sem data definida.",
-    icon: AnytimeIcon,
-  },
-  someday: {
-    label: "Someday",
-    description: "Adiado de propósito, fora do radar ativo.",
-    icon: SomedayIcon,
-  },
-  logbook: {
-    label: "Logbook",
-    description: "O que já foi concluído, por dia.",
-    icon: LogbookIcon,
-  },
-};
-
 export function MainContent() {
-  const activeView = useNavigationStore((s) => s.activeView);
-  const view = viewCopy[activeView];
-  const Icon = view.icon;
-
-  return (
-    <main className="cerne-main">
-      <header className="cerne-main__header">
-        <h1 className="text-h1">{view.label}</h1>
-        <p className="text-body-small">{view.description}</p>
-      </header>
-
-      {activeView === "inbox" ? (
-        <TaskList />
-      ) : (
-        <EmptyState
-          icon={<Icon width={28} height={28} />}
-          title="Está tudo em dia por aqui."
-          description="Organização por Today/Upcoming/Areas chega na Fase 3."
-        />
-      )}
-    </main>
+  const route = useNavigationStore((s) => s.route);
+  const tasks = useTaskStore((s) => s.tasks);
+  const area = useAreaStore((s) =>
+    route.type === "area" ? s.areas.find((a) => a.id === route.areaId) : undefined,
   );
+  const project = useProjectStore((s) =>
+    route.type === "project"
+      ? s.projects.find((p) => p.id === route.projectId)
+      : undefined,
+  );
+
+  if (route.type === "area") {
+    return (
+      <main className="cerne-main">
+        <header className="cerne-main__header">
+          <h1 className="text-h1">{area?.name ?? "Área"}</h1>
+        </header>
+        {area && <AreaView areaId={area.id} />}
+      </main>
+    );
+  }
+
+  if (route.type === "project") {
+    return (
+      <main className="cerne-main">
+        <header className="cerne-main__header">
+          <h1 className="text-h1">{project?.name ?? "Projeto"}</h1>
+        </header>
+        {project && <ProjectView projectId={project.id} />}
+      </main>
+    );
+  }
+
+  switch (route.view) {
+    case "inbox": {
+      const inboxTasks = tasks.filter(isInboxTask);
+      return (
+        <main className="cerne-main">
+          <header className="cerne-main__header">
+            <h1 className="text-h1">Inbox</h1>
+            <p className="text-body-small">Captura bruta, ainda não classificada.</p>
+          </header>
+          <TaskList
+            tasks={inboxTasks}
+            emptyIcon={<InboxIcon width={28} height={28} />}
+            emptyTitle="Está tudo em dia por aqui."
+            emptyDescription="Capture qualquer coisa acima — classificar é opcional."
+          />
+        </main>
+      );
+    }
+    case "today": {
+      const todayTasks = sortTodayTasks(tasks.filter((t) => isTodayTask(t)));
+      return (
+        <main className="cerne-main">
+          <header className="cerne-main__header">
+            <h1 className="text-h1">Today</h1>
+            <p className="text-body-small">O compromisso de hoje.</p>
+          </header>
+          <TaskList
+            tasks={todayTasks}
+            quickAddDefaults={{ when: "today" }}
+            emptyIcon={<SunIcon width={28} height={28} />}
+            emptyTitle="Está tudo em dia por aqui."
+            emptyDescription="Nada planejado para hoje."
+          />
+        </main>
+      );
+    }
+    case "upcoming": {
+      const upcomingTasks = sortUpcomingTasks(tasks.filter((t) => isUpcomingTask(t)));
+      return (
+        <main className="cerne-main">
+          <header className="cerne-main__header">
+            <h1 className="text-h1">Upcoming</h1>
+            <p className="text-body-small">O que vem pela frente.</p>
+          </header>
+          <TaskList
+            tasks={upcomingTasks}
+            emptyIcon={<UpcomingIcon width={28} height={28} />}
+            emptyTitle="Nada agendado."
+            emptyDescription="Defina uma data ou prazo numa tarefa para ela aparecer aqui."
+          />
+        </main>
+      );
+    }
+    case "anytime": {
+      const anytimeTasks = tasks.filter((t) => isAnytimeTask(t));
+      return (
+        <main className="cerne-main">
+          <header className="cerne-main__header">
+            <h1 className="text-h1">Anytime</h1>
+            <p className="text-body-small">Backlog ativo, sem data definida.</p>
+          </header>
+          <TaskList
+            tasks={anytimeTasks}
+            emptyIcon={<AnytimeIcon width={28} height={28} />}
+            emptyTitle="Está tudo em dia por aqui."
+            emptyDescription="Capture algo acima."
+          />
+        </main>
+      );
+    }
+    case "someday": {
+      const somedayTasks = tasks.filter((t) => isSomedayTask(t));
+      return (
+        <main className="cerne-main">
+          <header className="cerne-main__header">
+            <h1 className="text-h1">Someday</h1>
+            <p className="text-body-small">Adiado de propósito, fora do radar ativo.</p>
+          </header>
+          <TaskList
+            tasks={somedayTasks}
+            quickAddDefaults={{ when: "someday" }}
+            emptyIcon={<SomedayIcon width={28} height={28} />}
+            emptyTitle="Nada adiado por enquanto."
+          />
+        </main>
+      );
+    }
+    case "logbook": {
+      const logbookTasks = tasks.filter(isLogbookTask);
+      return (
+        <main className="cerne-main">
+          <header className="cerne-main__header">
+            <h1 className="text-h1">Logbook</h1>
+            <p className="text-body-small">O que já foi concluído, por dia.</p>
+          </header>
+          <LogbookList tasks={logbookTasks} />
+        </main>
+      );
+    }
+  }
 }
