@@ -1,4 +1,5 @@
 import type { Task } from "../../types";
+import type { Route } from "../../store/navigationStore";
 
 /**
  * As views fixas são lentes de tempo/atenção sobre o mesmo conjunto de
@@ -117,4 +118,16 @@ export function groupLogbookTasks(tasks: Task[]): LogbookGroup[] {
         (b.completedAt ?? "").localeCompare(a.completedAt ?? ""),
       ),
     }));
+}
+
+/** Pra onde navegar ao selecionar uma tarefa na busca — a lente mais específica que a contém. */
+export function resolveTaskRoute(task: Task): Route {
+  if (task.projectId) return { type: "project", projectId: task.projectId };
+  if (task.areaId) return { type: "area", areaId: task.areaId };
+  if (task.status === "completed") return { type: "fixed", view: "logbook" };
+  if (isTodayTask(task)) return { type: "fixed", view: "today" };
+  if (isUpcomingTask(task)) return { type: "fixed", view: "upcoming" };
+  if (isSomedayTask(task)) return { type: "fixed", view: "someday" };
+  if (isAnytimeTask(task)) return { type: "fixed", view: "anytime" };
+  return { type: "fixed", view: "inbox" };
 }

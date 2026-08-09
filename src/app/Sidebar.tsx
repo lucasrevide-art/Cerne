@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
 import { useNavigationStore, type FixedView } from "../store/navigationStore";
+import { useCommandPaletteStore } from "../store/commandPaletteStore";
 import { AreaNavList } from "../features/areas/AreaNavList";
 import {
   InboxIcon,
@@ -8,6 +9,7 @@ import {
   AnytimeIcon,
   SomedayIcon,
   LogbookIcon,
+  SearchIcon,
 } from "../components/icons";
 import "./Sidebar.css";
 
@@ -28,12 +30,23 @@ const topEntries: NavEntry[] = [
 export function Sidebar() {
   const route = useNavigationStore((s) => s.route);
   const setFixedView = useNavigationStore((s) => s.setFixedView);
+  const openCommandPalette = useCommandPaletteStore((s) => s.open);
 
   return (
     <nav className="cerne-sidebar" aria-label="Navegação principal">
       <div className="cerne-sidebar__brand">
         <span className="text-h2">Cerne</span>
       </div>
+
+      <button
+        type="button"
+        className="cerne-sidebar__search-trigger"
+        onClick={openCommandPalette}
+      >
+        <SearchIcon width={16} height={16} />
+        <span>Buscar</span>
+        <kbd className="cerne-sidebar__search-hint">⌘K</kbd>
+      </button>
 
       <ul className="cerne-sidebar__list">
         {topEntries.map(({ id, label, icon: Icon }) => (

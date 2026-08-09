@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Task } from "../../types";
 import { useTaskStore } from "../../store/taskStore";
+import { useNavigationStore } from "../../store/navigationStore";
 import { TaskRow } from "../../components/TaskRow";
 import { TaskEditor } from "./TaskEditor";
 import "./TaskListItem.css";
@@ -36,9 +37,20 @@ interface TaskListItemProps {
 export function TaskListItem({ task }: TaskListItemProps) {
   const [expanded, setExpanded] = useState(false);
   const toggleComplete = useTaskStore((s) => s.toggleComplete);
+  const highlightTaskId = useNavigationStore((s) => s.highlightTaskId);
+  const clearHighlightTask = useNavigationStore((s) => s.clearHighlightTask);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (highlightTaskId === task.id) {
+      setExpanded(true);
+      rootRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+      clearHighlightTask();
+    }
+  }, [highlightTaskId, task.id, clearHighlightTask]);
 
   return (
-    <div className="cerne-task-item">
+    <div className="cerne-task-item" ref={rootRef}>
       <div
         className="cerne-task-item__row"
         onClick={() => setExpanded((v) => !v)}

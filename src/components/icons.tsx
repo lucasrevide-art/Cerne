@@ -96,3 +96,29 @@ export function AreasIcon(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+export function SearchIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="8" cy="8" r="5" />
+      <path d="M15.25 15.25 12 12" />
+    </svg>
+  );
+}
+
+export function CircleIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="9" cy="9" r="6" />
+    </svg>
+  );
+}
+
+export function ProjectIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="3" y="2.75" width="12" height="12.5" rx="1.5" />
+      <path d="M6 6.5h6M6 9h6M6 11.5h3.5" />
+    </svg>
+  );
+}
