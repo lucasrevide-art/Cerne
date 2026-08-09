@@ -6,20 +6,18 @@ import { TaskList } from "../features/tasks/TaskList";
 import { LogbookList } from "../features/tasks/LogbookList";
 import { AreaView } from "../features/areas/AreaView";
 import { ProjectView } from "../features/projects/ProjectView";
+import { UpcomingView } from "../features/upcoming/UpcomingView";
 import {
   isInboxTask,
   isTodayTask,
-  isUpcomingTask,
   isAnytimeTask,
   isSomedayTask,
   isLogbookTask,
   sortTodayTasks,
-  sortUpcomingTasks,
 } from "../features/tasks/taskFilters";
 import {
   InboxIcon,
   SunIcon,
-  UpcomingIcon,
   AnytimeIcon,
   SomedayIcon,
 } from "../components/icons";
@@ -96,19 +94,13 @@ export function MainContent() {
       );
     }
     case "upcoming": {
-      const upcomingTasks = sortUpcomingTasks(tasks.filter((t) => isUpcomingTask(t)));
       return (
         <main className="cerne-main">
           <header className="cerne-main__header">
             <h1 className="text-h1">Upcoming</h1>
             <p className="text-body-small">O que vem pela frente.</p>
           </header>
-          <TaskList
-            tasks={upcomingTasks}
-            emptyIcon={<UpcomingIcon width={28} height={28} />}
-            emptyTitle="Nada agendado."
-            emptyDescription="Defina uma data ou prazo numa tarefa para ela aparecer aqui."
-          />
+          <UpcomingView />
         </main>
       );
     }
