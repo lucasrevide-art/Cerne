@@ -3,6 +3,8 @@ import type { Task } from "../../types";
 import { useTaskStore } from "../../store/taskStore";
 import { useNavigationStore } from "../../store/navigationStore";
 import { TaskRow } from "../../components/TaskRow";
+import { RepeatIcon } from "../../components/icons";
+import { describeRecurrence } from "../../lib/recurrence/recurrenceEngine";
 import { TaskEditor } from "./TaskEditor";
 import "./TaskListItem.css";
 
@@ -18,7 +20,7 @@ const whenLabel: Record<string, string> = {
   someday: "Algum dia",
 };
 
-function formatMetadata(task: Task): string | null {
+function formatMetadataText(task: Task): string | null {
   const parts: string[] = [];
   if (task.when === "date" && task.whenDate) {
     parts.push(task.whenDate);
@@ -37,6 +39,7 @@ interface TaskListItemProps {
 export function TaskListItem({ task }: TaskListItemProps) {
   const [expanded, setExpanded] = useState(false);
   const toggleComplete = useTaskStore((s) => s.toggleComplete);
+  const recurrence = useTaskStore((s) => s.recurrencesByTask[task.id]);
   const highlightTaskId = useNavigationStore((s) => s.highlightTaskId);
   const clearHighlightTask = useNavigationStore((s) => s.clearHighlightTask);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -49,6 +52,24 @@ export function TaskListItem({ task }: TaskListItemProps) {
     }
   }, [highlightTaskId, task.id, clearHighlightTask]);
 
+  const metadataText = formatMetadataText(task);
+  const metadata =
+    metadataText || recurrence ? (
+      <span className="cerne-task-item__metadata">
+        {recurrence && (
+          <RepeatIcon
+            width={11}
+            height={11}
+            className="cerne-task-item__recurrence-icon"
+            aria-label={`Repete: ${describeRecurrence(recurrence)}`}
+          />
+        )}
+        {recurrence && <span>{describeRecurrence(recurrence)}</span>}
+        {recurrence && metadataText && <span>·</span>}
+        {metadataText && <span>{metadataText}</span>}
+      </span>
+    ) : null;
+
   return (
     <div className="cerne-task-item" ref={rootRef}>
       <div
@@ -58,7 +79,7 @@ export function TaskListItem({ task }: TaskListItemProps) {
         <TaskRow
           title={task.title}
           completed={task.status === "completed"}
-          metadata={formatMetadata(task)}
+          metadata={metadata}
           onToggleComplete={() => toggleComplete(task.id)}
         />
       </div>

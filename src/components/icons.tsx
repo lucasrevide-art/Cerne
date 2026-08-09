@@ -122,3 +122,14 @@ export function ProjectIcon(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+export function RepeatIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M3.5 8.5V7a3 3 0 0 1 3-3h7" />
+      <path d="M11.5 2 13.5 4l-2 2" />
+      <path d="M14.5 9.5V11a3 3 0 0 1-3 3h-7" />
+      <path d="M6.5 16 4.5 14l2-2" />
+    </svg>
+  );
+}

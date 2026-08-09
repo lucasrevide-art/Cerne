@@ -23,6 +23,31 @@ const priorityOptions: { value: number; label: string }[] = [
   { value: 3, label: "Alta" },
 ];
 
+type RecurrenceBucket = "none" | "daily" | "weekly" | "monthly";
+
+const recurrenceBucketOptions: { value: RecurrenceBucket; label: string }[] = [
+  { value: "none", label: "Nenhuma" },
+  { value: "daily", label: "Diária" },
+  { value: "weekly", label: "Semanal" },
+  { value: "monthly", label: "Mensal" },
+];
+
+const recurrenceUnit: Record<Exclude<RecurrenceBucket, "none">, string> = {
+  daily: "dias",
+  weekly: "semanas",
+  monthly: "meses",
+};
+
+const weekdayOptions = [
+  { value: 0, label: "Dom" },
+  { value: 1, label: "Seg" },
+  { value: 2, label: "Ter" },
+  { value: 3, label: "Qua" },
+  { value: 4, label: "Qui" },
+  { value: 5, label: "Sex" },
+  { value: 6, label: "Sáb" },
+];
+
 const EMPTY_SUBTASKS: Subtask[] = [];
 
 interface TaskEditorProps {
@@ -41,11 +66,59 @@ export function TaskEditor({ task, onClose }: TaskEditorProps) {
   const addSubtask = useTaskStore((s) => s.addSubtask);
   const toggleSubtask = useTaskStore((s) => s.toggleSubtask);
   const removeSubtask = useTaskStore((s) => s.removeSubtask);
+  const recurrence = useTaskStore((s) => s.recurrencesByTask[task.id]);
+  const setRecurrence = useTaskStore((s) => s.setRecurrence);
+  const removeRecurrence = useTaskStore((s) => s.removeRecurrence);
   const [notes, setNotes] = useState(task.notes);
   const [subtaskDraft, setSubtaskDraft] = useState("");
 
   function commitNotes() {
     if (notes !== task.notes) updateTask(task.id, { notes });
+  }
+
+  const recurrenceBucket: RecurrenceBucket = !recurrence
+    ? "none"
+    : recurrence.type === "daily"
+      ? "daily"
+      : recurrence.type === "monthly"
+        ? "monthly"
+        : "weekly";
+  const recurrenceInterval = recurrence?.interval ?? 1;
+  const recurrenceWeekdays = recurrence?.weekdays ?? [];
+
+  function selectRecurrenceBucket(bucket: RecurrenceBucket) {
+    if (bucket === "none") {
+      removeRecurrence(task.id);
+      return;
+    }
+    const weekdays = bucket === "weekly" ? recurrenceWeekdays : [];
+    setRecurrence(task.id, {
+      type: bucket === "weekly" && weekdays.length > 0 ? "custom" : bucket,
+      interval: recurrenceInterval,
+      weekdays,
+    });
+  }
+
+  function changeRecurrenceInterval(value: number) {
+    if (recurrenceBucket === "none") return;
+    const weekdays = recurrenceBucket === "weekly" ? recurrenceWeekdays : [];
+    setRecurrence(task.id, {
+      type: recurrenceBucket === "weekly" && weekdays.length > 0 ? "custom" : recurrenceBucket,
+      interval: Math.max(1, value),
+      weekdays,
+    });
+  }
+
+  function toggleRecurrenceWeekday(day: number) {
+    if (recurrenceBucket !== "weekly") return;
+    const next = recurrenceWeekdays.includes(day)
+      ? recurrenceWeekdays.filter((d) => d !== day)
+      : [...recurrenceWeekdays, day].sort((a, b) => a - b);
+    setRecurrence(task.id, {
+      type: next.length > 0 ? "custom" : "weekly",
+      interval: recurrenceInterval,
+      weekdays: next,
+    });
   }
 
   function handleSubtaskSubmit(e: FormEvent) {
@@ -109,6 +182,55 @@ export function TaskEditor({ task, onClose }: TaskEditorProps) {
             updateTask(task.id, { deadline: e.target.value || null })
           }
         />
+      </div>
+
+      <div className="cerne-task-editor__field">
+        <span className="text-caption">Recorrência</span>
+        <div className="cerne-task-editor__segmented">
+          {recurrenceBucketOptions.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              className={`cerne-task-editor__segment${
+                recurrenceBucket === opt.value ? " cerne-task-editor__segment--active" : ""
+              }`}
+              onClick={() => selectRecurrenceBucket(opt.value)}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+        {recurrenceBucket !== "none" && (
+          <div className="cerne-task-editor__recurrence-detail">
+            <span>A cada</span>
+            <input
+              type="number"
+              min={1}
+              className="cerne-task-editor__recurrence-interval"
+              value={recurrenceInterval}
+              onChange={(e) => changeRecurrenceInterval(Number(e.target.value))}
+            />
+            <span>{recurrenceUnit[recurrenceBucket]}</span>
+          </div>
+        )}
+        {recurrenceBucket === "weekly" && (
+          <div className="cerne-task-editor__segmented">
+            {weekdayOptions.map((day) => (
+              <button
+                key={day.value}
+                type="button"
+                className={`cerne-task-editor__segment${
+                  recurrenceWeekdays.includes(day.value)
+                    ? " cerne-task-editor__segment--active"
+                    : ""
+                }`}
+                onClick={() => toggleRecurrenceWeekday(day.value)}
+              >
+                {day.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="cerne-task-editor__field">

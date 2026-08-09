@@ -9,3 +9,13 @@
 .cerne-task-item__row {
   cursor: pointer;
 }
+
+.cerne-task-item__metadata {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cerne-task-item__recurrence-icon {
+  flex-shrink: 0;
+}

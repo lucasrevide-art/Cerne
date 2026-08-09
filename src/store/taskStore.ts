@@ -1,10 +1,27 @@
 import { create } from "zustand";
 import { taskRepository } from "../lib/repository/taskRepository";
-import type { Task, Subtask } from "../types";
+import { recurrenceRepository } from "../lib/repository/recurrenceRepository";
+import { computeNextDate } from "../lib/recurrence/recurrenceEngine";
+import type { Task, Subtask, Recurrence, RecurrenceType } from "../types";
+
+interface RecurrenceRule {
+  type: RecurrenceType;
+  interval: number;
+  weekdays: number[];
+}
+
+function todayStr(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function baseDateForRecurrence(task: Task): string {
+  return task.whenDate ?? task.deadline ?? todayStr();
+}
 
 interface TaskState {
   tasks: Task[];
   subtasksByTask: Record<string, Subtask[]>;
+  recurrencesByTask: Record<string, Recurrence>;
   loaded: boolean;
   loadTasks: () => Promise<void>;
   addTask: (title: string, overrides?: Partial<Task>) => Promise<void>;
@@ -14,23 +31,31 @@ interface TaskState {
   addSubtask: (taskId: string, title: string) => Promise<void>;
   toggleSubtask: (taskId: string, subtaskId: string) => Promise<void>;
   removeSubtask: (taskId: string, subtaskId: string) => Promise<void>;
+  setRecurrence: (taskId: string, rule: RecurrenceRule) => Promise<void>;
+  removeRecurrence: (taskId: string) => Promise<void>;
 }
 
 export const useTaskStore = create<TaskState>((set, get) => ({
   tasks: [],
   subtasksByTask: {},
+  recurrencesByTask: {},
   loaded: false,
 
   loadTasks: async () => {
-    const [tasks, subtasks] = await Promise.all([
+    const [tasks, subtasks, recurrences] = await Promise.all([
       taskRepository.list(),
       taskRepository.listAllSubtasks(),
+      recurrenceRepository.listAll(),
     ]);
     const subtasksByTask: Record<string, Subtask[]> = {};
     for (const subtask of subtasks) {
       (subtasksByTask[subtask.taskId] ??= []).push(subtask);
     }
-    set({ tasks, subtasksByTask, loaded: true });
+    const recurrencesByTask: Record<string, Recurrence> = {};
+    for (const recurrence of recurrences) {
+      recurrencesByTask[recurrence.taskId] = recurrence;
+    }
+    set({ tasks, subtasksByTask, recurrencesByTask, loaded: true });
   },
 
   addTask: async (title, overrides) => {
@@ -48,6 +73,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
   toggleComplete: async (id) => {
     const task = get().tasks.find((t) => t.id === id);
     if (!task) return;
+
     if (task.status === "completed") {
       await taskRepository.reopen(id);
       set((state) => ({
@@ -55,23 +81,56 @@ export const useTaskStore = create<TaskState>((set, get) => ({
           t.id === id ? { ...t, status: "open", completedAt: null } : t,
         ),
       }));
-    } else {
-      const completedAt = new Date().toISOString();
-      await taskRepository.complete(id);
-      set((state) => ({
-        tasks: state.tasks.map((t) =>
-          t.id === id ? { ...t, status: "completed", completedAt } : t,
-        ),
-      }));
+      return;
     }
+
+    const completedAt = new Date().toISOString();
+    await taskRepository.complete(id);
+    set((state) => ({
+      tasks: state.tasks.map((t) =>
+        t.id === id ? { ...t, status: "completed", completedAt } : t,
+      ),
+    }));
+
+    const recurrence = get().recurrencesByTask[id];
+    if (!recurrence) return;
+
+    const nextDate = computeNextDate(baseDateForRecurrence(task), recurrence);
+    const nextTask = await taskRepository.create({
+      title: task.title,
+      notes: task.notes,
+      when: "date",
+      whenDate: nextDate,
+      deadline: null,
+      priority: task.priority,
+      type: task.type,
+      amount: task.amount,
+      projectId: task.projectId,
+      areaId: task.areaId,
+      tagIds: task.tagIds,
+    });
+    await recurrenceRepository.moveToTask(id, nextTask.id, nextDate);
+    set((state) => {
+      const recurrencesByTask = { ...state.recurrencesByTask };
+      delete recurrencesByTask[id];
+      recurrencesByTask[nextTask.id] = { ...recurrence, taskId: nextTask.id, nextDate };
+      return { tasks: [nextTask, ...state.tasks], recurrencesByTask };
+    });
   },
 
   removeTask: async (id) => {
     await taskRepository.remove(id);
+    await recurrenceRepository.removeForTask(id);
     set((state) => {
       const subtasksByTask = { ...state.subtasksByTask };
       delete subtasksByTask[id];
-      return { tasks: state.tasks.filter((t) => t.id !== id), subtasksByTask };
+      const recurrencesByTask = { ...state.recurrencesByTask };
+      delete recurrencesByTask[id];
+      return {
+        tasks: state.tasks.filter((t) => t.id !== id),
+        subtasksByTask,
+        recurrencesByTask,
+      };
     });
   },
 
@@ -108,5 +167,27 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         [taskId]: state.subtasksByTask[taskId].filter((s) => s.id !== subtaskId),
       },
     }));
+  },
+
+  setRecurrence: async (taskId, rule) => {
+    const task = get().tasks.find((t) => t.id === taskId);
+    if (!task) return;
+    const nextDate = computeNextDate(baseDateForRecurrence(task), rule);
+    const recurrence = await recurrenceRepository.setForTask(taskId, {
+      ...rule,
+      nextDate,
+    });
+    set((state) => ({
+      recurrencesByTask: { ...state.recurrencesByTask, [taskId]: recurrence },
+    }));
+  },
+
+  removeRecurrence: async (taskId) => {
+    await recurrenceRepository.removeForTask(taskId);
+    set((state) => {
+      const recurrencesByTask = { ...state.recurrencesByTask };
+      delete recurrencesByTask[taskId];
+      return { recurrencesByTask };
+    });
   },
 }));
