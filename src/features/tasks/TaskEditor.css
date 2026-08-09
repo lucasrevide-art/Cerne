@@ -93,6 +93,54 @@
   box-shadow: 0 0 0 3px var(--color-focus-ring);
 }
 
+.cerne-task-editor__financial {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.cerne-task-editor__amount {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: 32px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-control);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-size: var(--text-body-small-size);
+}
+
+.cerne-task-editor__amount-input {
+  width: 90px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--color-text-primary);
+  font: inherit;
+}
+
+.cerne-task-editor__category-input {
+  height: 32px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-control);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: var(--text-body-small-size);
+  min-width: 140px;
+}
+
+.cerne-task-editor__category-input:focus-visible,
+.cerne-task-editor__amount:focus-within {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
 .cerne-task-editor__select {
   width: fit-content;
   max-width: 100%;

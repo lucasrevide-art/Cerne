@@ -48,6 +48,17 @@ const weekdayOptions = [
   { value: 6, label: "Sáb" },
 ];
 
+const categorySuggestions = [
+  "Moradia",
+  "Alimentação",
+  "Transporte",
+  "Saúde",
+  "Lazer",
+  "Assinaturas",
+  "Educação",
+  "Outros",
+];
+
 const EMPTY_SUBTASKS: Subtask[] = [];
 
 interface TaskEditorProps {
@@ -294,6 +305,64 @@ export function TaskEditor({ task, onClose }: TaskEditorProps) {
             </button>
           ))}
         </div>
+      </div>
+
+      <div className="cerne-task-editor__field">
+        <span className="text-caption">Tipo</span>
+        <div className="cerne-task-editor__segmented">
+          <button
+            type="button"
+            className={`cerne-task-editor__segment${
+              task.type === "default" ? " cerne-task-editor__segment--active" : ""
+            }`}
+            onClick={() => updateTask(task.id, { type: "default" })}
+          >
+            Tarefa
+          </button>
+          <button
+            type="button"
+            className={`cerne-task-editor__segment${
+              task.type === "financial" ? " cerne-task-editor__segment--active" : ""
+            }`}
+            onClick={() => updateTask(task.id, { type: "financial" })}
+          >
+            Financeiro
+          </button>
+        </div>
+        {task.type === "financial" && (
+          <div className="cerne-task-editor__financial">
+            <div className="cerne-task-editor__amount">
+              <span>R$</span>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="0,00"
+                className="cerne-task-editor__amount-input"
+                value={task.amount ?? ""}
+                onChange={(e) =>
+                  updateTask(task.id, {
+                    amount: e.target.value === "" ? undefined : Number(e.target.value),
+                  })
+                }
+              />
+            </div>
+            <input
+              list="cerne-category-suggestions"
+              placeholder="Categoria…"
+              className="cerne-task-editor__category-input"
+              value={task.category ?? ""}
+              onChange={(e) =>
+                updateTask(task.id, { category: e.target.value || undefined })
+              }
+            />
+            <datalist id="cerne-category-suggestions">
+              {categorySuggestions.map((c) => (
+                <option key={c} value={c} />
+              ))}
+            </datalist>
+          </div>
+        )}
       </div>
 
       <div className="cerne-task-editor__field">

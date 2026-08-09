@@ -1,0 +1,43 @@
+.cerne-financial-summary {
+  max-width: 320px;
+  margin-bottom: var(--space-6);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+
+.cerne-financial-summary__total {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cerne-financial-summary__total-value {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.cerne-financial-summary__categories {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cerne-financial-summary__category {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-body-small-size);
+  color: var(--color-text-secondary);
+}
+
+.cerne-financial-summary__category span:last-child {
+  font-family: var(--font-mono);
+  font-size: var(--text-caption-size);
+  color: var(--color-text-tertiary);
+}

@@ -3,6 +3,7 @@ import { useProjectStore } from "../../store/projectStore";
 import { useTaskStore } from "../../store/taskStore";
 import { useNavigationStore } from "../../store/navigationStore";
 import { TaskList } from "../tasks/TaskList";
+import { FinancialSummary } from "../finance/FinancialSummary";
 import { AreasIcon } from "../../components/icons";
 import "./AreaView.css";
 
@@ -20,11 +21,17 @@ export function AreaView({ areaId }: AreaViewProps) {
   const tasks = allTasks.filter(
     (t) => t.areaId === areaId && t.projectId === null && t.status === "open",
   );
+  const projectIds = new Set(projects.map((p) => p.id));
+  const financialScopeTasks = allTasks.filter(
+    (t) => t.areaId === areaId || (t.projectId !== null && projectIds.has(t.projectId)),
+  );
 
   if (!area) return null;
 
   return (
     <div className="cerne-area-view">
+      <FinancialSummary tasks={financialScopeTasks} />
+
       {projects.length > 0 && (
         <div className="cerne-area-view__projects">
           {projects.map((project) => (

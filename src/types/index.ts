@@ -20,6 +20,7 @@ export interface Task {
   priority: number;
   type: TaskType;
   amount?: number;
+  category?: string;
   projectId: string | null;
   areaId: string | null;
   tagIds: string[];

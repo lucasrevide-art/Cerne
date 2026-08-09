@@ -20,6 +20,11 @@ const whenLabel: Record<string, string> = {
   someday: "Algum dia",
 };
 
+const currencyFormatter = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+});
+
 function formatMetadataText(task: Task): string | null {
   const parts: string[] = [];
   if (task.when === "date" && task.whenDate) {
@@ -29,6 +34,13 @@ function formatMetadataText(task: Task): string | null {
   }
   if (task.deadline) parts.push(`Prazo ${task.deadline}`);
   if (task.priority > 0) parts.push(priorityLabel[task.priority]);
+  if (task.type === "financial" && task.amount !== undefined) {
+    parts.push(
+      task.category
+        ? `${currencyFormatter.format(task.amount)} · ${task.category}`
+        : currencyFormatter.format(task.amount),
+    );
+  }
   return parts.length > 0 ? parts.join(" · ") : null;
 }
 

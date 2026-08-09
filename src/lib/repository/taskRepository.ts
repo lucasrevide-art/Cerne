@@ -31,6 +31,8 @@ export const taskRepository = {
       status: "open",
       priority: input.priority ?? 0,
       type: input.type ?? "default",
+      amount: input.amount,
+      category: input.category,
       projectId: input.projectId ?? null,
       areaId: input.areaId ?? null,
       tagIds: input.tagIds ?? [],
