@@ -27,7 +27,10 @@ export function TaskRow({
         role="checkbox"
         aria-checked={completed}
         aria-label={completed ? "Marcar como não concluída" : "Concluir tarefa"}
-        onClick={onToggleComplete}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleComplete?.();
+        }}
       >
         {completed && <CheckIcon width={12} height={12} />}
       </button>

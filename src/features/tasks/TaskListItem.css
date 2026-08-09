@@ -1,0 +1,11 @@
+.cerne-task-item {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cerne-task-item:last-child {
+  border-bottom: none;
+}
+
+.cerne-task-item__row {
+  cursor: pointer;
+}

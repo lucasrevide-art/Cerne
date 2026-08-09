@@ -1,0 +1,16 @@
+.cerne-task-list {
+  max-width: 640px;
+}
+
+.cerne-task-list__quick-add {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.cerne-task-list__rows {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  padding: var(--space-2);
+}
