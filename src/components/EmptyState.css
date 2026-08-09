@@ -1,0 +1,27 @@
+.cerne-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--space-2);
+  padding: var(--space-10) var(--space-4);
+  color: var(--color-text-tertiary);
+}
+
+.cerne-empty-state__icon {
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--space-2);
+}
+
+.cerne-empty-state__title {
+  font-size: var(--text-body-size);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.cerne-empty-state__description {
+  font-size: var(--text-body-small-size);
+  color: var(--color-text-tertiary);
+  max-width: 36ch;
+}
