@@ -12,6 +12,7 @@ import { useNavigationStore, type FixedView } from "../../store/navigationStore"
 import { useTaskStore } from "../../store/taskStore";
 import { useAreaStore } from "../../store/areaStore";
 import { useProjectStore } from "../../store/projectStore";
+import { useShortcutsHelpStore } from "../../store/shortcutsHelpStore";
 import { Overlay } from "../../components/Overlay";
 import {
   SearchIcon,
@@ -24,6 +25,8 @@ import {
   AnytimeIcon,
   SomedayIcon,
   LogbookIcon,
+  PlusIcon,
+  HelpIcon,
 } from "../../components/icons";
 import { resolveTaskRoute } from "../tasks/taskFilters";
 import "./CommandPalette.css";
@@ -77,6 +80,8 @@ function CommandPaletteContent({ onClose }: { onClose: () => void }) {
   const setArea = useNavigationStore((s) => s.setArea);
   const setProject = useNavigationStore((s) => s.setProject);
   const highlightTask = useNavigationStore((s) => s.highlightTask);
+  const addTask = useTaskStore((s) => s.addTask);
+  const openShortcutsHelp = useShortcutsHelpStore((s) => s.open);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -108,6 +113,17 @@ function CommandPaletteContent({ onClose }: { onClose: () => void }) {
         onClose();
       },
     }));
+
+    commandItems.push({
+      id: "command:shortcuts-help",
+      type: "command",
+      label: "Ver atalhos de teclado",
+      icon: <HelpIcon width={16} height={16} />,
+      onSelect: () => {
+        openShortcutsHelp();
+        onClose();
+      },
+    });
 
     const areaItems: ResultItem[] = areas.map((area) => ({
       id: `area:${area.id}`,
@@ -158,7 +174,18 @@ function CommandPaletteContent({ onClose }: { onClose: () => void }) {
     });
 
     return [...commandItems, ...areaItems, ...projectItems, ...taskItems];
-  }, [tasks, projects, areas, areaNameById, setFixedView, setArea, setProject, highlightTask, onClose]);
+  }, [
+    tasks,
+    projects,
+    areas,
+    areaNameById,
+    setFixedView,
+    setArea,
+    setProject,
+    highlightTask,
+    openShortcutsHelp,
+    onClose,
+  ]);
 
   const fuse = useMemo(
     () =>
@@ -171,11 +198,23 @@ function CommandPaletteContent({ onClose }: { onClose: () => void }) {
   );
 
   const results = useMemo(() => {
-    if (!query.trim()) {
+    const trimmed = query.trim();
+    if (!trimmed) {
       return allItems.filter((item) => item.type === "command");
     }
-    return fuse.search(query).slice(0, 30).map((r) => r.item);
-  }, [query, fuse, allItems]);
+    const matches = fuse.search(query).slice(0, 30).map((r) => r.item);
+    const createItem: ResultItem = {
+      id: "create-task",
+      type: "command",
+      label: `Criar tarefa "${trimmed}"`,
+      icon: <PlusIcon width={16} height={16} />,
+      onSelect: () => {
+        addTask(trimmed);
+        onClose();
+      },
+    };
+    return [...matches, createItem];
+  }, [query, fuse, allItems, addTask, onClose]);
 
   useEffect(() => {
     setSelectedIndex(0);
@@ -195,7 +234,7 @@ function CommandPaletteContent({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <Overlay onClose={onClose}>
+    <Overlay onClose={onClose} label="Buscar e comandos">
       <div className="cerne-command-palette">
         <div className="cerne-command-palette__search">
           <SearchIcon width={18} height={18} className="cerne-command-palette__search-icon" />

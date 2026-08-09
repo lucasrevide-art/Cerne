@@ -1,11 +1,11 @@
-import { useState, type FormEvent, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from "react";
 import type { Task, TaskWhen, Subtask } from "../../types";
 import { useTaskStore } from "../../store/taskStore";
 import { useAreaStore } from "../../store/areaStore";
 import { useProjectStore } from "../../store/projectStore";
-import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 import { TaskRow } from "../../components/TaskRow";
+import { ConfirmButton } from "../../components/ConfirmButton";
 import "./TaskEditor.css";
 
 const whenOptions: { value: TaskWhen; label: string }[] = [
@@ -82,6 +82,13 @@ export function TaskEditor({ task, onClose }: TaskEditorProps) {
   const removeRecurrence = useTaskStore((s) => s.removeRecurrence);
   const [notes, setNotes] = useState(task.notes);
   const [subtaskDraft, setSubtaskDraft] = useState("");
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  // Move o foco pra dentro do editor ao abrir, senão o Escape (que depende
+  // do foco estar neste subtree) não teria efeito quando aberto via teclado.
+  useEffect(() => {
+    rootRef.current?.focus();
+  }, []);
 
   function commitNotes() {
     if (notes !== task.notes) updateTask(task.id, { notes });
@@ -145,7 +152,18 @@ export function TaskEditor({ task, onClose }: TaskEditorProps) {
   }
 
   return (
-    <div className="cerne-task-editor" onClick={stop}>
+    <div
+      className="cerne-task-editor"
+      ref={rootRef}
+      tabIndex={-1}
+      onClick={stop}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") {
+          e.stopPropagation();
+          onClose();
+        }
+      }}
+    >
       <textarea
         className="cerne-task-editor__notes"
         placeholder="Notas…"
@@ -401,15 +419,15 @@ export function TaskEditor({ task, onClose }: TaskEditorProps) {
       </div>
 
       <div className="cerne-task-editor__actions">
-        <Button
-          variant="ghost"
-          onClick={() => {
+        <ConfirmButton
+          confirmLabel="Confirmar exclusão"
+          onConfirm={() => {
             removeTask(task.id);
             onClose();
           }}
         >
           Excluir tarefa
-        </Button>
+        </ConfirmButton>
       </div>
     </div>
   );

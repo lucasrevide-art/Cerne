@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import type { Task } from "../../types";
 import { useTaskStore } from "../../store/taskStore";
 import { Input } from "../../components/Input";
@@ -16,6 +16,13 @@ interface TaskListProps {
   emptyDescription?: string;
 }
 
+/** Quanto tempo uma tarefa recém-concluída fica visível (riscada) antes de sumir da lente. */
+const COMPLETE_HOLD_MS = 650;
+
+function prefersReducedMotion(): boolean {
+  return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+}
+
 /**
  * Lista genérica orientada por props — não decide sozinha quais tarefas
  * mostrar. Cada view (Inbox, Today, uma Area, um Project…) passa sua própria
@@ -30,7 +37,35 @@ export function TaskList({
   emptyDescription,
 }: TaskListProps) {
   const addTask = useTaskStore((s) => s.addTask);
+  const allTasks = useTaskStore((s) => s.tasks);
   const [draft, setDraft] = useState("");
+
+  // Segura na tela, riscada, a tarefa que acabou de ser concluída e saiu do
+  // filtro desta view — em vez de sumir na hora (seção 4, fluxo "Executar").
+  const [heldIds, setHeldIds] = useState<string[]>([]);
+  const prevTasksRef = useRef<Task[]>(tasks);
+
+  useEffect(() => {
+    const currentIds = new Set(tasks.map((t) => t.id));
+    // Checa o status ATUAL no store — o objeto em prevTasksRef é um snapshot
+    // de antes da mudança e nunca é mutado, então t.status ali sempre reflete
+    // o estado antigo (sempre "open"), não serve pra saber se foi concluída.
+    const dropped = prevTasksRef.current.filter((t) => {
+      if (currentIds.has(t.id)) return false;
+      const current = allTasks.find((at) => at.id === t.id);
+      return current?.status === "completed";
+    });
+    if (dropped.length > 0 && !prefersReducedMotion()) {
+      setHeldIds((prev) => [...prev, ...dropped.map((t) => t.id)]);
+      for (const t of dropped) {
+        const id = t.id;
+        window.setTimeout(() => {
+          setHeldIds((prev) => prev.filter((held) => held !== id));
+        }, COMPLETE_HOLD_MS);
+      }
+    }
+    prevTasksRef.current = tasks;
+  }, [tasks, allTasks]);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -39,6 +74,13 @@ export function TaskList({
     addTask(title, quickAddDefaults);
     setDraft("");
   }
+
+  const heldTasks = heldIds
+    .filter((id) => !tasks.some((t) => t.id === id))
+    .map((id) => allTasks.find((t) => t.id === id))
+    .filter((t): t is Task => !!t);
+
+  const displayTasks = [...tasks, ...heldTasks];
 
   return (
     <div className="cerne-task-list">
@@ -55,7 +97,7 @@ export function TaskList({
         </form>
       )}
 
-      {tasks.length === 0 ? (
+      {displayTasks.length === 0 ? (
         <EmptyState
           icon={emptyIcon}
           title={emptyTitle}
@@ -63,7 +105,7 @@ export function TaskList({
         />
       ) : (
         <div className="cerne-task-list__rows">
-          {tasks.map((task) => (
+          {displayTasks.map((task) => (
             <TaskListItem key={task.id} task={task} />
           ))}
         </div>

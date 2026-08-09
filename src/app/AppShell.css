@@ -2,3 +2,19 @@
   display: flex;
   height: 100vh;
 }
+
+.cerne-shell__backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  border: none;
+  padding: 0;
+  background: rgba(29, 31, 30, 0.32);
+}
+
+@media (max-width: 860px) {
+  .cerne-shell__backdrop {
+    display: block;
+  }
+}

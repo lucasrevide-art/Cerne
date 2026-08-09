@@ -5,6 +5,7 @@ import { useNavigationStore } from "../../store/navigationStore";
 import { TaskList } from "../tasks/TaskList";
 import { FinancialSummary } from "../finance/FinancialSummary";
 import { AreasIcon } from "../../components/icons";
+import { ConfirmButton } from "../../components/ConfirmButton";
 import "./AreaView.css";
 
 interface AreaViewProps {
@@ -13,9 +14,11 @@ interface AreaViewProps {
 
 export function AreaView({ areaId }: AreaViewProps) {
   const area = useAreaStore((s) => s.areas.find((a) => a.id === areaId));
+  const removeArea = useAreaStore((s) => s.removeArea);
   const allProjects = useProjectStore((s) => s.projects);
   const allTasks = useTaskStore((s) => s.tasks);
   const setProject = useNavigationStore((s) => s.setProject);
+  const setFixedView = useNavigationStore((s) => s.setFixedView);
 
   const projects = allProjects.filter((p) => p.areaId === areaId);
   const tasks = allTasks.filter(
@@ -54,6 +57,18 @@ export function AreaView({ areaId }: AreaViewProps) {
         emptyTitle="Nenhuma tarefa avulsa nesta área."
         emptyDescription="Capture algo acima ou crie um projeto para organizar melhor."
       />
+
+      <div className="cerne-area-view__actions">
+        <ConfirmButton
+          confirmLabel="Confirmar exclusão da área"
+          onConfirm={() => {
+            removeArea(areaId);
+            setFixedView("inbox");
+          }}
+        >
+          Excluir área
+        </ConfirmButton>
+      </div>
     </div>
   );
 }

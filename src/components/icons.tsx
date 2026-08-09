@@ -123,6 +123,32 @@ export function ProjectIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function MenuIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M3 5.5h12M3 9h12M3 12.5h12" />
+    </svg>
+  );
+}
+
+export function PlusIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M9 3.5v11M3.5 9h11" />
+    </svg>
+  );
+}
+
+export function HelpIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="9" cy="9" r="6.5" />
+      <path d="M6.9 7.1a2.1 2.1 0 1 1 3.2 1.8c-.7.45-1.1.85-1.1 1.6" />
+      <circle cx="9" cy="12.6" r="0.2" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export function RepeatIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...props}>

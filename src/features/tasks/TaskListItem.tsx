@@ -86,7 +86,19 @@ export function TaskListItem({ task }: TaskListItemProps) {
     <div className="cerne-task-item" ref={rootRef}>
       <div
         className="cerne-task-item__row"
+        tabIndex={0}
+        aria-label={`${task.title}${task.status === "completed" ? ", concluída" : ""}`}
+        aria-expanded={expanded}
         onClick={() => setExpanded((v) => !v)}
+        onKeyDown={(e) => {
+          if (e.key === " ") {
+            e.preventDefault();
+            toggleComplete(task.id);
+          } else if (e.key === "Enter") {
+            e.preventDefault();
+            setExpanded((v) => !v);
+          }
+        }}
       >
         <TaskRow
           title={task.title}

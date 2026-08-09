@@ -1,6 +1,7 @@
 import type { ReactElement } from "react";
 import { useNavigationStore, type FixedView } from "../store/navigationStore";
 import { useCommandPaletteStore } from "../store/commandPaletteStore";
+import { useUiStore } from "../store/uiStore";
 import { AreaNavList } from "../features/areas/AreaNavList";
 import {
   InboxIcon,
@@ -31,9 +32,13 @@ export function Sidebar() {
   const route = useNavigationStore((s) => s.route);
   const setFixedView = useNavigationStore((s) => s.setFixedView);
   const openCommandPalette = useCommandPaletteStore((s) => s.open);
+  const sidebarOpen = useUiStore((s) => s.sidebarOpen);
 
   return (
-    <nav className="cerne-sidebar" aria-label="Navegação principal">
+    <nav
+      className={`cerne-sidebar${sidebarOpen ? " cerne-sidebar--open" : ""}`}
+      aria-label="Navegação principal"
+    >
       <div className="cerne-sidebar__brand">
         <span className="text-h2">Cerne</span>
       </div>
