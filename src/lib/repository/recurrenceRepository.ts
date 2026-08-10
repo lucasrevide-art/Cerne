@@ -1,4 +1,5 @@
-import { db } from "./db";
+import { supabase } from "../supabase/client";
+import { recurrenceFromRow, type RecurrenceRow } from "../supabase/mappers";
 import type { Recurrence, RecurrenceType } from "../../types";
 
 function createId(): string {
@@ -14,34 +15,42 @@ interface UpsertRecurrenceInput {
 
 export const recurrenceRepository = {
   async listAll(): Promise<Recurrence[]> {
-    return db.recurrences.toArray();
+    const { data, error } = await supabase.from("recurrences").select("*");
+    if (error) throw error;
+    return (data as RecurrenceRow[]).map(recurrenceFromRow);
   },
 
   async setForTask(taskId: string, input: UpsertRecurrenceInput): Promise<Recurrence> {
-    const existing = await db.recurrences.where("taskId").equals(taskId).first();
-    const recurrence: Recurrence = {
-      id: existing?.id ?? createId(),
-      taskId,
+    const row = {
+      id: createId(),
+      task_id: taskId,
       type: input.type,
-      interval: input.interval,
+      interval_count: input.interval,
       weekdays: input.weekdays,
-      nextDate: input.nextDate,
+      next_date: input.nextDate,
     };
-    await db.recurrences.put(recurrence);
-    return recurrence;
+    // task_id é UNIQUE no schema — upsert por esse campo cobre tanto criar
+    // a regra pela primeira vez quanto substituir a existente.
+    const { data, error } = await supabase
+      .from("recurrences")
+      .upsert(row, { onConflict: "task_id" })
+      .select()
+      .single();
+    if (error) throw error;
+    return recurrenceFromRow(data as RecurrenceRow);
   },
 
   async removeForTask(taskId: string): Promise<void> {
-    await db.recurrences.where("taskId").equals(taskId).delete();
+    const { error } = await supabase.from("recurrences").delete().eq("task_id", taskId);
+    if (error) throw error;
   },
 
   /** Move a regra de um template concluído para a nova ocorrência que nasce. */
   async moveToTask(fromTaskId: string, toTaskId: string, nextDate: string): Promise<void> {
-    const existing = await db.recurrences.where("taskId").equals(fromTaskId).first();
-    if (!existing) return;
-    await db.transaction("rw", db.recurrences, async () => {
-      await db.recurrences.delete(existing.id);
-      await db.recurrences.add({ ...existing, id: createId(), taskId: toTaskId, nextDate });
-    });
+    const { error } = await supabase
+      .from("recurrences")
+      .update({ task_id: toTaskId, next_date: nextDate })
+      .eq("task_id", fromTaskId);
+    if (error) throw error;
   },
 };

@@ -4,6 +4,7 @@ import { useCommandPaletteStore } from "../store/commandPaletteStore";
 import { useUiStore } from "../store/uiStore";
 import { useBackupPanelStore } from "../store/backupPanelStore";
 import { AreaNavList } from "../features/areas/AreaNavList";
+import { supabase } from "../lib/supabase/client";
 import {
   InboxIcon,
   SunIcon,
@@ -13,6 +14,7 @@ import {
   LogbookIcon,
   SearchIcon,
   BackupIcon,
+  LogoutIcon,
 } from "../components/icons";
 import "./Sidebar.css";
 
@@ -100,6 +102,16 @@ export function Sidebar() {
           <button type="button" className="cerne-sidebar__item" onClick={openBackupPanel}>
             <BackupIcon width={18} height={18} />
             <span>Backup</span>
+          </button>
+        </li>
+        <li>
+          <button
+            type="button"
+            className="cerne-sidebar__item"
+            onClick={() => void supabase.auth.signOut()}
+          >
+            <LogoutIcon width={18} height={18} />
+            <span>Sair</span>
           </button>
         </li>
       </ul>

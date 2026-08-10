@@ -1,13 +1,21 @@
 -- Cerne — schema do Supabase
--- Rode isto uma vez em: Supabase → SQL Editor → New query → Run.
+-- Rode isto em: Supabase → SQL Editor → New query → Run.
+-- Seguro rodar mais de uma vez (apaga e recria as tabelas do zero) —
+-- só faça isso se ainda não tiver dados importantes salvos lá.
 -- Cria as 5 tabelas (espelhando src/types/index.ts), com Row Level
 -- Security pra cada usuário só ver/editar os próprios dados, e liga
 -- Realtime nelas pra sincronização automática entre dispositivos.
 
 create extension if not exists pgcrypto;
 
+drop table if exists recurrences cascade;
+drop table if exists subtasks cascade;
+drop table if exists tasks cascade;
+drop table if exists projects cascade;
+drop table if exists areas cascade;
+
 -- ÁREAS ----------------------------------------------------------------
-create table if not exists areas (
+create table areas (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade default auth.uid(),
   name text not null,
@@ -18,19 +26,23 @@ create table if not exists areas (
 );
 
 -- PROJETOS ---------------------------------------------------------------
-create table if not exists projects (
+-- area_id é "on delete cascade" de propósito: apagar uma área também apaga
+-- os projetos dela (mesmo comportamento do repositório local antigo). As
+-- tarefas desses projetos não são apagadas — o FK tasks.project_id abaixo
+-- é "on delete set null", então elas ficam soltas (voltam pro Inbox).
+create table projects (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade default auth.uid(),
   name text not null,
   notes text not null default '',
   status text not null default 'active',
-  area_id uuid references areas(id) on delete set null,
+  area_id uuid references areas(id) on delete cascade,
   deadline date,
   sort_order double precision not null default (extract(epoch from now()) * 1000)
 );
 
 -- TAREFAS ------------------------------------------------------------------
-create table if not exists tasks (
+create table tasks (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade default auth.uid(),
   title text not null,
@@ -52,7 +64,7 @@ create table if not exists tasks (
 );
 
 -- SUBTAREFAS ------------------------------------------------------------
-create table if not exists subtasks (
+create table subtasks (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade default auth.uid(),
   task_id uuid not null references tasks(id) on delete cascade,
@@ -62,22 +74,24 @@ create table if not exists subtasks (
 );
 
 -- RECORRÊNCIAS ------------------------------------------------------------
-create table if not exists recurrences (
+-- "interval" é palavra reservada do SQL (tipo de dado embutido), por isso
+-- interval_count em vez de interval como nome de coluna.
+create table recurrences (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade default auth.uid(),
   task_id uuid not null unique references tasks(id) on delete cascade,
   type text not null,
-  interval integer not null default 1,
+  interval_count integer not null default 1,
   weekdays integer[] not null default '{}',
   next_date date not null
 );
 
 -- Índices (espelham os campos indexados no Dexie local) -------------------
-create index if not exists tasks_user_id_idx on tasks(user_id);
-create index if not exists tasks_project_id_idx on tasks(project_id);
-create index if not exists tasks_area_id_idx on tasks(area_id);
-create index if not exists subtasks_task_id_idx on subtasks(task_id);
-create index if not exists projects_area_id_idx on projects(area_id);
+create index tasks_user_id_idx on tasks(user_id);
+create index tasks_project_id_idx on tasks(project_id);
+create index tasks_area_id_idx on tasks(area_id);
+create index subtasks_task_id_idx on subtasks(task_id);
+create index projects_area_id_idx on projects(area_id);
 
 -- Row Level Security: cada usuário só enxerga/edita os próprios dados -----
 alter table areas enable row level security;

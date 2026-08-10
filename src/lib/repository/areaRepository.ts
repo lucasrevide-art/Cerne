@@ -1,4 +1,5 @@
-import { db } from "./db";
+import { supabase } from "../supabase/client";
+import { areaFromRow, type AreaRow } from "../supabase/mappers";
 import type { Area } from "../../types";
 
 function createId(): string {
@@ -7,38 +8,35 @@ function createId(): string {
 
 export const areaRepository = {
   async list(): Promise<Area[]> {
-    return db.areas.orderBy("sortOrder").toArray();
+    const { data, error } = await supabase.from("areas").select("*").order("sort_order");
+    if (error) throw error;
+    return (data as AreaRow[]).map(areaFromRow);
   },
 
   async create(name: string): Promise<Area> {
-    const area: Area = {
-      id: createId(),
-      name,
-      color: "",
-      icon: "",
-      notes: "",
-      sortOrder: Date.now(),
-    };
-    await db.areas.add(area);
-    return area;
+    const row = { id: createId(), name, color: "", icon: "", notes: "", sort_order: Date.now() };
+    const { data, error } = await supabase.from("areas").insert(row).select().single();
+    if (error) throw error;
+    return areaFromRow(data as AreaRow);
   },
 
   async update(id: string, changes: Partial<Area>): Promise<void> {
-    await db.areas.update(id, changes);
+    const row: Record<string, unknown> = {};
+    if (changes.name !== undefined) row.name = changes.name;
+    if (changes.color !== undefined) row.color = changes.color;
+    if (changes.icon !== undefined) row.icon = changes.icon;
+    if (changes.notes !== undefined) row.notes = changes.notes;
+    if (changes.sortOrder !== undefined) row.sort_order = changes.sortOrder;
+    if (Object.keys(row).length === 0) return;
+    const { error } = await supabase.from("areas").update(row).eq("id", id);
+    if (error) throw error;
   },
 
   async remove(id: string): Promise<void> {
-    await db.transaction("rw", db.areas, db.projects, db.tasks, async () => {
-      const projects = await db.projects.where("areaId").equals(id).toArray();
-      await db.projects.where("areaId").equals(id).delete();
-      const projectIds = projects.map((p) => p.id);
-      if (projectIds.length > 0) {
-        await db.tasks.where("projectId").anyOf(projectIds).modify({
-          projectId: null,
-        });
-      }
-      await db.tasks.where("areaId").equals(id).modify({ areaId: null });
-      await db.areas.delete(id);
-    });
+    // O schema cuida do resto via FK: projects.area_id é "on delete cascade"
+    // (apaga os projetos da área junto), e tasks.area_id / tasks.project_id
+    // são "on delete set null" (as tarefas ficam soltas, voltam pro Inbox).
+    const { error } = await supabase.from("areas").delete().eq("id", id);
+    if (error) throw error;
   },
 };

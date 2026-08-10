@@ -230,6 +230,16 @@ export function BackupIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function LogoutIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M7.5 15.5H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h3.5" />
+      <path d="M11.5 12.5 15 9l-3.5-3.5" />
+      <path d="M15 9H6.5" />
+    </svg>
+  );
+}
+
 export function RepeatIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...props}>
