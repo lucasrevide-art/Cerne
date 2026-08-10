@@ -11,4 +11,10 @@ if (!supabaseConfigured) {
   );
 }
 
-export const supabase = createClient(url ?? "", anonKey ?? "");
+// URL/chave inválidas (placeholder) quando não configurado, só pra createClient
+// não travar a inicialização inteira do app — supabaseConfigured é quem
+// decide se mostramos um aviso em vez de deixar a tela em branco.
+export const supabase = createClient(
+  url ?? "https://placeholder.supabase.co",
+  anonKey ?? "placeholder-key",
+);

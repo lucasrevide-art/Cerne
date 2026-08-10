@@ -3,7 +3,7 @@ import type { Session } from "@supabase/supabase-js";
 import { AppShell } from "./app/AppShell";
 import { AuthGate } from "./features/auth/AuthGate";
 import { RealtimeSync } from "./features/sync/RealtimeSync";
-import { supabase } from "./lib/supabase/client";
+import { supabase, supabaseConfigured } from "./lib/supabase/client";
 import { useTaskStore } from "./store/taskStore";
 import { useAreaStore } from "./store/areaStore";
 import { useProjectStore } from "./store/projectStore";
@@ -16,7 +16,14 @@ function App() {
   const loadProjects = useProjectStore((s) => s.loadProjects);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    if (!supabaseConfigured) {
+      setSession(null);
+      return;
+    }
+    supabase.auth
+      .getSession()
+      .then(({ data }) => setSession(data.session))
+      .catch(() => setSession(null));
     const { data: subscription } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
     });
