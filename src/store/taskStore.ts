@@ -33,6 +33,7 @@ interface TaskState {
   removeSubtask: (taskId: string, subtaskId: string) => Promise<void>;
   setRecurrence: (taskId: string, rule: RecurrenceRule) => Promise<void>;
   removeRecurrence: (taskId: string) => Promise<void>;
+  reorderTasks: (orderedIds: string[]) => Promise<void>;
 }
 
 export const useTaskStore = create<TaskState>((set, get) => ({
@@ -188,6 +189,43 @@ export const useTaskStore = create<TaskState>((set, get) => ({
       const recurrencesByTask = { ...state.recurrencesByTask };
       delete recurrencesByTask[taskId];
       return { recurrencesByTask };
+    });
+  },
+
+  // Reordenação manual (arrastar e soltar). orderedIds é a nova ordem
+  // desejada para o subconjunto arrastado; os novos sortOrder ficam dentro
+  // da mesma faixa [min, max] que essas tarefas já ocupavam, então tarefas
+  // de fora do subconjunto não são afetadas. O array `tasks` em si é
+  // reordenado por sortOrder desc pra ficar consistente com a ordem que
+  // taskRepository.list() já usa.
+  reorderTasks: async (orderedIds) => {
+    const { tasks } = get();
+    const involved = orderedIds
+      .map((id) => tasks.find((t) => t.id === id))
+      .filter((t): t is Task => !!t);
+    if (involved.length < 2) return;
+
+    const sortOrders = involved.map((t) => t.sortOrder).sort((a, b) => b - a);
+    const max = sortOrders[0];
+    const min = sortOrders[sortOrders.length - 1];
+    const step = (max - min) / (involved.length - 1 || 1);
+
+    const nextSortOrderById = new Map(
+      orderedIds.map((id, index) => [id, Math.round(max - index * step)]),
+    );
+
+    await Promise.all(
+      orderedIds.map((id) =>
+        taskRepository.update(id, { sortOrder: nextSortOrderById.get(id)! }),
+      ),
+    );
+
+    set((state) => {
+      const nextTasks = state.tasks.map((t) =>
+        nextSortOrderById.has(t.id) ? { ...t, sortOrder: nextSortOrderById.get(t.id)! } : t,
+      );
+      nextTasks.sort((a, b) => b.sortOrder - a.sortOrder);
+      return { tasks: nextTasks };
     });
   },
 }));

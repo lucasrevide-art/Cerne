@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import type { Task } from "../../types";
 import { useTaskStore } from "../../store/taskStore";
+import { useAreaStore } from "../../store/areaStore";
+import { useProjectStore } from "../../store/projectStore";
 import { useNavigationStore } from "../../store/navigationStore";
 import { TaskRow } from "../../components/TaskRow";
-import { RepeatIcon } from "../../components/icons";
+import { RepeatIcon, GripIcon } from "../../components/icons";
 import { describeRecurrence } from "../../lib/recurrence/recurrenceEngine";
-import { TaskEditor } from "./TaskEditor";
+import { TaskDetailOverlay } from "./TaskDetailOverlay";
 import "./TaskListItem.css";
 
 const priorityLabel: Record<number, string> = {
@@ -46,28 +48,56 @@ function formatMetadataText(task: Task): string | null {
 
 interface TaskListItemProps {
   task: Task;
+  /** Mostra a etiqueta de área/projeto na linha — útil em listas que misturam tarefas de vários lugares. */
+  showProjectTag?: boolean;
+  /** Habilita arrastar-para-reordenar nesta linha. */
+  reorderable?: boolean;
+  isDragging?: boolean;
+  isDragOver?: boolean;
+  onDragStart?: () => void;
+  onDragOverRow?: () => void;
+  onDropRow?: () => void;
+  onDragEndRow?: () => void;
 }
 
-export function TaskListItem({ task }: TaskListItemProps) {
-  const [expanded, setExpanded] = useState(false);
+export function TaskListItem({
+  task,
+  showProjectTag,
+  reorderable,
+  isDragging,
+  isDragOver,
+  onDragStart,
+  onDragOverRow,
+  onDropRow,
+  onDragEndRow,
+}: TaskListItemProps) {
+  const [open, setOpen] = useState(false);
   const toggleComplete = useTaskStore((s) => s.toggleComplete);
   const recurrence = useTaskStore((s) => s.recurrencesByTask[task.id]);
+  const area = useAreaStore((s) =>
+    showProjectTag && task.areaId ? s.areas.find((a) => a.id === task.areaId) : undefined,
+  );
+  const project = useProjectStore((s) =>
+    showProjectTag && task.projectId ? s.projects.find((p) => p.id === task.projectId) : undefined,
+  );
   const highlightTaskId = useNavigationStore((s) => s.highlightTaskId);
   const clearHighlightTask = useNavigationStore((s) => s.clearHighlightTask);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (highlightTaskId === task.id) {
-      setExpanded(true);
+      setOpen(true);
       rootRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
       clearHighlightTask();
     }
   }, [highlightTaskId, task.id, clearHighlightTask]);
 
+  const tagLabel = project?.name ?? area?.name;
   const metadataText = formatMetadataText(task);
   const metadata =
-    metadataText || recurrence ? (
+    metadataText || recurrence || tagLabel ? (
       <span className="cerne-task-item__metadata">
+        {tagLabel && <span className="cerne-task-item__tag">{tagLabel}</span>}
         {recurrence && (
           <RepeatIcon
             width={11}
@@ -82,21 +112,55 @@ export function TaskListItem({ task }: TaskListItemProps) {
       </span>
     ) : null;
 
+  const itemClassName = [
+    "cerne-task-item",
+    isDragging && "cerne-task-item--dragging",
+    isDragOver && "cerne-task-item--drag-over",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <div className="cerne-task-item" ref={rootRef}>
+    <div
+      className={itemClassName}
+      ref={rootRef}
+      draggable={reorderable}
+      onDragStart={reorderable ? onDragStart : undefined}
+      onDragOver={
+        reorderable
+          ? (e) => {
+              e.preventDefault();
+              onDragOverRow?.();
+            }
+          : undefined
+      }
+      onDrop={
+        reorderable
+          ? (e) => {
+              e.preventDefault();
+              onDropRow?.();
+            }
+          : undefined
+      }
+      onDragEnd={reorderable ? onDragEndRow : undefined}
+    >
+      {reorderable && (
+        <span className="cerne-task-item__grip" aria-hidden="true">
+          <GripIcon width={14} height={14} />
+        </span>
+      )}
       <div
         className="cerne-task-item__row"
         tabIndex={0}
         aria-label={`${task.title}${task.status === "completed" ? ", concluída" : ""}`}
-        aria-expanded={expanded}
-        onClick={() => setExpanded((v) => !v)}
+        onClick={() => setOpen(true)}
         onKeyDown={(e) => {
           if (e.key === " ") {
             e.preventDefault();
             toggleComplete(task.id);
           } else if (e.key === "Enter") {
             e.preventDefault();
-            setExpanded((v) => !v);
+            setOpen(true);
           }
         }}
       >
@@ -107,8 +171,8 @@ export function TaskListItem({ task }: TaskListItemProps) {
           onToggleComplete={() => toggleComplete(task.id)}
         />
       </div>
-      {expanded && (
-        <TaskEditor task={task} onClose={() => setExpanded(false)} />
+      {open && (
+        <TaskDetailOverlay task={task} onClose={() => setOpen(false)} />
       )}
     </div>
   );

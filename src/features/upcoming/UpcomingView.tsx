@@ -37,11 +37,13 @@ export function UpcomingView() {
       />
       <TaskList
         tasks={visibleTasks}
+        hideQuickAdd={!selectedDate}
+        quickAddDefaults={selectedDate ? { when: "date", whenDate: selectedDate } : undefined}
         emptyIcon={<UpcomingIcon width={28} height={28} />}
-        emptyTitle={selectedDate ? "Nada agendado para esse dia." : "Nada agendado."}
+        emptyTitle={selectedDate ? "Nada agendado para esse dia." : "Selecione um dia no calendário para agendar."}
         emptyDescription={
           selectedDate
-            ? undefined
+            ? "Use o campo acima para adicionar algo direto nesse dia."
             : "Defina uma data ou prazo numa tarefa para ela aparecer aqui."
         }
       />

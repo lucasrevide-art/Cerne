@@ -29,6 +29,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
       <TaskList
         tasks={tasks}
         quickAddDefaults={{ projectId }}
+        reorderable
         emptyIcon={<UpcomingIcon width={28} height={28} />}
         emptyTitle="Este projeto ainda não tem tarefas."
         emptyDescription="Capture a primeira acima."

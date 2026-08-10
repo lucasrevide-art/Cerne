@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from "react";
+import { useState, type FormEvent } from "react";
 import type { Task, TaskWhen, Subtask } from "../../types";
 import { useTaskStore } from "../../store/taskStore";
 import { useAreaStore } from "../../store/areaStore";
@@ -6,6 +6,7 @@ import { useProjectStore } from "../../store/projectStore";
 import { Input } from "../../components/Input";
 import { TaskRow } from "../../components/TaskRow";
 import { ConfirmButton } from "../../components/ConfirmButton";
+import { ArrowLeftIcon } from "../../components/icons";
 import "./TaskEditor.css";
 
 const whenOptions: { value: TaskWhen; label: string }[] = [
@@ -64,9 +65,10 @@ const EMPTY_SUBTASKS: Subtask[] = [];
 interface TaskEditorProps {
   task: Task;
   onClose: () => void;
+  onBack?: () => void;
 }
 
-export function TaskEditor({ task, onClose }: TaskEditorProps) {
+export function TaskEditor({ task, onClose, onBack }: TaskEditorProps) {
   const updateTask = useTaskStore((s) => s.updateTask);
   const removeTask = useTaskStore((s) => s.removeTask);
   const subtasks = useTaskStore(
@@ -80,15 +82,18 @@ export function TaskEditor({ task, onClose }: TaskEditorProps) {
   const recurrence = useTaskStore((s) => s.recurrencesByTask[task.id]);
   const setRecurrence = useTaskStore((s) => s.setRecurrence);
   const removeRecurrence = useTaskStore((s) => s.removeRecurrence);
+  const [title, setTitle] = useState(task.title);
   const [notes, setNotes] = useState(task.notes);
   const [subtaskDraft, setSubtaskDraft] = useState("");
-  const rootRef = useRef<HTMLDivElement>(null);
 
-  // Move o foco pra dentro do editor ao abrir, senão o Escape (que depende
-  // do foco estar neste subtree) não teria efeito quando aberto via teclado.
-  useEffect(() => {
-    rootRef.current?.focus();
-  }, []);
+  function commitTitle() {
+    const trimmed = title.trim();
+    if (!trimmed) {
+      setTitle(task.title);
+      return;
+    }
+    if (trimmed !== task.title) updateTask(task.id, { title: trimmed });
+  }
 
   function commitNotes() {
     if (notes !== task.notes) updateTask(task.id, { notes });
@@ -141,29 +146,36 @@ export function TaskEditor({ task, onClose }: TaskEditorProps) {
 
   function handleSubtaskSubmit(e: FormEvent) {
     e.preventDefault();
-    const title = subtaskDraft.trim();
-    if (!title) return;
-    addSubtask(task.id, title);
+    const subtaskTitle = subtaskDraft.trim();
+    if (!subtaskTitle) return;
+    addSubtask(task.id, subtaskTitle);
     setSubtaskDraft("");
   }
 
-  function stop(e: MouseEvent) {
-    e.stopPropagation();
-  }
-
   return (
-    <div
-      className="cerne-task-editor"
-      ref={rootRef}
-      tabIndex={-1}
-      onClick={stop}
-      onKeyDown={(e) => {
-        if (e.key === "Escape") {
-          e.stopPropagation();
-          onClose();
-        }
-      }}
-    >
+    <div className="cerne-task-editor">
+      {onBack && (
+        <button
+          type="button"
+          className="cerne-task-editor__back"
+          onClick={onBack}
+        >
+          <ArrowLeftIcon width={14} height={14} />
+          Voltar
+        </button>
+      )}
+
+      <Input
+        className="cerne-task-editor__title"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        onBlur={commitTitle}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") e.currentTarget.blur();
+        }}
+        aria-label="Título da tarefa"
+      />
+
       <textarea
         className="cerne-task-editor__notes"
         placeholder="Notas…"

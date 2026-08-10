@@ -1,0 +1,113 @@
+.cerne-task-preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.cerne-task-preview__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.cerne-task-preview__checkbox {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-top: 2px;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-text-tertiary);
+  background: transparent;
+  color: var(--color-accent-contrast);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.cerne-task-preview__checkbox:hover {
+  border-color: var(--color-accent);
+}
+
+.cerne-task-preview__checkbox[aria-checked="true"] {
+  background: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.cerne-task-preview__title {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-h1-size);
+  line-height: var(--text-h1-line);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  word-break: break-word;
+}
+
+.cerne-task-preview__title--completed {
+  color: var(--color-text-tertiary);
+  text-decoration: line-through;
+}
+
+.cerne-task-preview__edit {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.cerne-task-preview__edit:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.cerne-task-preview__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding-left: 36px;
+}
+
+.cerne-task-preview__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--color-surface-elevated);
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption-size);
+}
+
+.cerne-task-preview__chip--tag {
+  background: var(--color-selected);
+  color: var(--color-accent);
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+
+.cerne-task-preview__notes {
+  margin: 0;
+  padding-left: 36px;
+  font-size: var(--text-body-small-size);
+  color: var(--color-text-secondary);
+  white-space: pre-wrap;
+}
+
+.cerne-task-preview__subtasks {
+  padding-left: 24px;
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-3);
+}

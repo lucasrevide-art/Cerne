@@ -14,6 +14,10 @@ interface TaskListProps {
   emptyIcon?: ReactNode;
   emptyTitle: string;
   emptyDescription?: string;
+  /** Mostra a etiqueta de área/projeto em cada linha — para listas que misturam tarefas de vários lugares. */
+  showProjectTag?: boolean;
+  /** Permite arrastar as linhas para reordenar — só faz sentido em listas cuja ordem é manual (não recalculada por data). */
+  reorderable?: boolean;
 }
 
 /** Quanto tempo uma tarefa recém-concluída fica visível (riscada) antes de sumir da lente. */
@@ -35,10 +39,15 @@ export function TaskList({
   emptyIcon,
   emptyTitle,
   emptyDescription,
+  showProjectTag,
+  reorderable,
 }: TaskListProps) {
   const addTask = useTaskStore((s) => s.addTask);
   const allTasks = useTaskStore((s) => s.tasks);
+  const reorderTasks = useTaskStore((s) => s.reorderTasks);
   const [draft, setDraft] = useState("");
+  const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
 
   // Segura na tela, riscada, a tarefa que acabou de ser concluída e saiu do
   // filtro desta view — em vez de sumir na hora (seção 4, fluxo "Executar").
@@ -75,6 +84,25 @@ export function TaskList({
     setDraft("");
   }
 
+  function handleDragOver(id: string) {
+    if (id !== draggedId) setDragOverId(id);
+  }
+
+  function handleDrop(targetId: string) {
+    const fromId = draggedId;
+    setDraggedId(null);
+    setDragOverId(null);
+    if (!fromId || fromId === targetId) return;
+    const ids = displayTasks.map((t) => t.id);
+    const fromIndex = ids.indexOf(fromId);
+    const toIndex = ids.indexOf(targetId);
+    if (fromIndex === -1 || toIndex === -1) return;
+    const reordered = [...ids];
+    reordered.splice(fromIndex, 1);
+    reordered.splice(toIndex, 0, fromId);
+    reorderTasks(reordered);
+  }
+
   const heldTasks = heldIds
     .filter((id) => !tasks.some((t) => t.id === id))
     .map((id) => allTasks.find((t) => t.id === id))
@@ -106,7 +134,21 @@ export function TaskList({
       ) : (
         <div className="cerne-task-list__rows">
           {displayTasks.map((task) => (
-            <TaskListItem key={task.id} task={task} />
+            <TaskListItem
+              key={task.id}
+              task={task}
+              showProjectTag={showProjectTag}
+              reorderable={reorderable}
+              isDragging={draggedId === task.id}
+              isDragOver={reorderable && dragOverId === task.id && draggedId !== task.id}
+              onDragStart={() => setDraggedId(task.id)}
+              onDragOverRow={() => handleDragOver(task.id)}
+              onDropRow={() => handleDrop(task.id)}
+              onDragEndRow={() => {
+                setDraggedId(null);
+                setDragOverId(null);
+              }}
+            />
           ))}
         </div>
       )}

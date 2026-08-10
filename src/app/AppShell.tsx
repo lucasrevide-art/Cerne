@@ -3,6 +3,7 @@ import { Sidebar } from "./Sidebar";
 import { MainContent } from "./MainContent";
 import { CommandPalette } from "../features/search/CommandPalette";
 import { ShortcutsHelp } from "./ShortcutsHelp";
+import { PomodoroWidget } from "../features/pomodoro/PomodoroWidget";
 import { useNavigationStore } from "../store/navigationStore";
 import { useUiStore } from "../store/uiStore";
 import "./AppShell.css";
@@ -31,6 +32,7 @@ export function AppShell() {
       <MainContent />
       <CommandPalette />
       <ShortcutsHelp />
+      <PomodoroWidget />
     </div>
   );
 }

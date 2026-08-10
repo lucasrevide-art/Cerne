@@ -149,6 +149,78 @@ export function HelpIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function PencilIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M11.5 3.5 14.5 6.5 6 15H3v-3Z" />
+      <path d="M10 5 13 8" />
+    </svg>
+  );
+}
+
+export function ArrowLeftIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M15 9H3M8 4 3 9l5 5" />
+    </svg>
+  );
+}
+
+export function GripIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="6.5" cy="4.5" r="0.9" fill="currentColor" stroke="none" />
+      <circle cx="6.5" cy="9" r="0.9" fill="currentColor" stroke="none" />
+      <circle cx="6.5" cy="13.5" r="0.9" fill="currentColor" stroke="none" />
+      <circle cx="11.5" cy="4.5" r="0.9" fill="currentColor" stroke="none" />
+      <circle cx="11.5" cy="9" r="0.9" fill="currentColor" stroke="none" />
+      <circle cx="11.5" cy="13.5" r="0.9" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+export function TimerIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="9" cy="10" r="6" />
+      <path d="M9 10V6.5M6.5 2.5h5" />
+    </svg>
+  );
+}
+
+export function PauseIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M6.5 4v10M11.5 4v10" />
+    </svg>
+  );
+}
+
+export function PlayIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M5.5 3.5v11l9-5.5Z" />
+    </svg>
+  );
+}
+
+export function StopIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="4.5" y="4.5" width="9" height="9" rx="1.5" />
+    </svg>
+  );
+}
+
+export function SkipIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M4.5 3.5v11l8-5.5Z" />
+      <path d="M13.5 3.5v11" />
+    </svg>
+  );
+}
+
 export function RepeatIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...props}>

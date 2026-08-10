@@ -1,12 +1,34 @@
 .cerne-task-item {
+  display: flex;
+  align-items: stretch;
   border-bottom: 1px solid var(--color-border);
+  transition: opacity var(--motion-duration-fast) var(--motion-ease);
 }
 
 .cerne-task-item:last-child {
   border-bottom: none;
 }
 
+.cerne-task-item--dragging {
+  opacity: 0.4;
+}
+
+.cerne-task-item--drag-over {
+  box-shadow: inset 0 2px 0 var(--color-accent);
+}
+
+.cerne-task-item__grip {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  width: 20px;
+  color: var(--color-text-tertiary);
+  cursor: grab;
+}
+
 .cerne-task-item__row {
+  flex: 1;
+  min-width: 0;
   cursor: pointer;
 }
 
@@ -18,4 +40,15 @@
 
 .cerne-task-item__recurrence-icon {
   flex-shrink: 0;
+}
+
+.cerne-task-item__tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-selected);
+  color: var(--color-accent);
+  font-family: var(--font-body);
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: normal;
 }

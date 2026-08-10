@@ -76,6 +76,7 @@ export function AreaView({ areaId }: AreaViewProps) {
       <TaskList
         tasks={tasks}
         quickAddDefaults={{ areaId }}
+        reorderable
         emptyIcon={<AreasIcon width={28} height={28} />}
         emptyTitle="Nenhuma tarefa avulsa nesta área."
         emptyDescription="Capture algo acima ou crie um projeto para organizar melhor."

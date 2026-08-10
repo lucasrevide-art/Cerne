@@ -10,7 +10,7 @@ import { AreaView } from "../features/areas/AreaView";
 import { ProjectView } from "../features/projects/ProjectView";
 import { UpcomingView } from "../features/upcoming/UpcomingView";
 import {
-  isInboxTask,
+  isOpen,
   isTodayTask,
   isAnytimeTask,
   isSomedayTask,
@@ -53,10 +53,12 @@ export function MainContent() {
     switch (route.view) {
       case "inbox":
         title = "Inbox";
-        description = "Captura bruta, ainda não classificada.";
+        description = "Panorama geral: todas as tarefas em aberto.";
         body = (
           <TaskList
-            tasks={tasks.filter(isInboxTask)}
+            tasks={tasks.filter(isOpen)}
+            showProjectTag
+            reorderable
             emptyIcon={<InboxIcon width={28} height={28} />}
             emptyTitle="Está tudo em dia por aqui."
             emptyDescription="Capture qualquer coisa acima — classificar é opcional."
@@ -87,6 +89,7 @@ export function MainContent() {
         body = (
           <TaskList
             tasks={tasks.filter((t) => isAnytimeTask(t))}
+            reorderable
             emptyIcon={<AnytimeIcon width={28} height={28} />}
             emptyTitle="Está tudo em dia por aqui."
             emptyDescription="Capture algo acima."
@@ -100,6 +103,7 @@ export function MainContent() {
           <TaskList
             tasks={tasks.filter((t) => isSomedayTask(t))}
             quickAddDefaults={{ when: "someday" }}
+            reorderable
             emptyIcon={<SomedayIcon width={28} height={28} />}
             emptyTitle="Nada adiado por enquanto."
           />
