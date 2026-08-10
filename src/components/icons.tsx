@@ -221,6 +221,15 @@ export function SkipIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function BackupIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M9 2.5v8M5.5 7 9 10.5 12.5 7" />
+      <path d="M3 12.5v1A1.5 1.5 0 0 0 4.5 15h9a1.5 1.5 0 0 0 1.5-1.5v-1" />
+    </svg>
+  );
+}
+
 export function RepeatIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...props}>
