@@ -240,6 +240,25 @@ export function LogoutIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function StarIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M9 2.5 11.1 6.9 16 7.6 12.5 11 13.3 15.8 9 13.5 4.7 15.8 5.5 11 2 7.6 6.9 6.9 9 2.5Z" />
+    </svg>
+  );
+}
+
+export function StarFilledIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <path
+        d="M9 2.5 11.1 6.9 16 7.6 12.5 11 13.3 15.8 9 13.5 4.7 15.8 5.5 11 2 7.6 6.9 6.9 9 2.5Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
 export function RepeatIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...props}>

@@ -20,10 +20,8 @@ import {
   ProjectIcon,
   AreasIcon,
   InboxIcon,
-  SunIcon,
+  StarIcon,
   UpcomingIcon,
-  AnytimeIcon,
-  SomedayIcon,
   LogbookIcon,
   PlusIcon,
   HelpIcon,
@@ -42,10 +40,8 @@ interface ResultItem {
 
 const fixedViewCommands: { view: FixedView; label: string; icon: ReactNode }[] = [
   { view: "inbox", label: "Ir para Inbox", icon: <InboxIcon width={16} height={16} /> },
-  { view: "today", label: "Ir para Today", icon: <SunIcon width={16} height={16} /> },
+  { view: "focus", label: "Ir para A Única Coisa", icon: <StarIcon width={16} height={16} /> },
   { view: "upcoming", label: "Ir para Upcoming", icon: <UpcomingIcon width={16} height={16} /> },
-  { view: "anytime", label: "Ir para Anytime", icon: <AnytimeIcon width={16} height={16} /> },
-  { view: "someday", label: "Ir para Someday", icon: <SomedayIcon width={16} height={16} /> },
   { view: "logbook", label: "Ir para Logbook", icon: <LogbookIcon width={16} height={16} /> },
 ];
 
@@ -95,10 +91,8 @@ function CommandPaletteContent({ onClose }: { onClose: () => void }) {
 
   const viewLabel: Record<FixedView, string> = {
     inbox: "Inbox",
-    today: "Today",
+    focus: "A Única Coisa",
     upcoming: "Upcoming",
-    anytime: "Anytime",
-    someday: "Someday",
     logbook: "Logbook",
   };
 

@@ -2,10 +2,8 @@ import { create } from "zustand";
 
 export type FixedView =
   | "inbox"
-  | "today"
+  | "focus"
   | "upcoming"
-  | "anytime"
-  | "someday"
   | "logbook";
 
 export type Route =

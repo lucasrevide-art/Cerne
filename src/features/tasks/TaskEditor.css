@@ -210,6 +210,41 @@
   font-size: var(--text-body-small-size);
 }
 
+.cerne-task-editor__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.cerne-task-editor__tag-chip {
+  height: 26px;
+  padding: 0 var(--space-3);
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-size: var(--text-body-small-size);
+  cursor: pointer;
+  transition: background-color var(--motion-duration-fast) var(--motion-ease),
+    border-color var(--motion-duration-fast) var(--motion-ease),
+    color var(--motion-duration-fast) var(--motion-ease);
+}
+
+.cerne-task-editor__tag-chip:hover {
+  background: var(--color-surface-elevated);
+}
+
+.cerne-task-editor__tag-chip--active {
+  background: var(--color-selected);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.cerne-task-editor__tag-add {
+  max-width: 200px;
+}
+
 .cerne-task-editor__subtasks {
   display: flex;
   flex-direction: column;

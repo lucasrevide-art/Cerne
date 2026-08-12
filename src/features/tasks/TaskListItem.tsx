@@ -3,9 +3,10 @@ import type { Task } from "../../types";
 import { useTaskStore } from "../../store/taskStore";
 import { useAreaStore } from "../../store/areaStore";
 import { useProjectStore } from "../../store/projectStore";
+import { useTagStore } from "../../store/tagStore";
 import { useNavigationStore } from "../../store/navigationStore";
 import { TaskRow } from "../../components/TaskRow";
-import { RepeatIcon, GripIcon } from "../../components/icons";
+import { RepeatIcon, GripIcon, StarFilledIcon } from "../../components/icons";
 import { describeRecurrence } from "../../lib/recurrence/recurrenceEngine";
 import { TaskDetailOverlay } from "./TaskDetailOverlay";
 import "./TaskListItem.css";
@@ -80,6 +81,8 @@ export function TaskListItem({
   const project = useProjectStore((s) =>
     showProjectTag && task.projectId ? s.projects.find((p) => p.id === task.projectId) : undefined,
   );
+  const allTags = useTagStore((s) => s.tags);
+  const taskTags = task.tagIds.length > 0 ? allTags.filter((t) => task.tagIds.includes(t.id)) : [];
   const highlightTaskId = useNavigationStore((s) => s.highlightTaskId);
   const clearHighlightTask = useNavigationStore((s) => s.clearHighlightTask);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -95,9 +98,14 @@ export function TaskListItem({
   const tagLabel = project?.name ?? area?.name;
   const metadataText = formatMetadataText(task);
   const metadata =
-    metadataText || recurrence || tagLabel ? (
+    metadataText || recurrence || tagLabel || taskTags.length > 0 ? (
       <span className="cerne-task-item__metadata">
         {tagLabel && <span className="cerne-task-item__tag">{tagLabel}</span>}
+        {taskTags.map((tag) => (
+          <span key={tag.id} className="cerne-task-item__tag cerne-task-item__tag--custom">
+            {tag.name}
+          </span>
+        ))}
         {recurrence && (
           <RepeatIcon
             width={11}
@@ -168,6 +176,11 @@ export function TaskListItem({
           title={task.title}
           completed={task.status === "completed"}
           metadata={metadata}
+          leading={
+            task.isFocus ? (
+              <StarFilledIcon width={13} height={13} aria-label="A Única Coisa" />
+            ) : undefined
+          }
           onToggleComplete={() => toggleComplete(task.id)}
         />
       </div>

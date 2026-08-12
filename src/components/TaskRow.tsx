@@ -6,6 +6,8 @@ interface TaskRowProps {
   title: string;
   completed?: boolean;
   metadata?: ReactNode;
+  /** Ícone opcional antes do título (ex.: estrela de "A Única Coisa"). */
+  leading?: ReactNode;
   onToggleComplete?: () => void;
 }
 
@@ -17,6 +19,7 @@ export function TaskRow({
   title,
   completed = false,
   metadata,
+  leading,
   onToggleComplete,
 }: TaskRowProps) {
   return (
@@ -34,6 +37,7 @@ export function TaskRow({
       >
         {completed && <CheckIcon width={12} height={12} />}
       </button>
+      {leading && <span className="cerne-task-row__leading">{leading}</span>}
       <span className="cerne-task-row__title">{title}</span>
       {metadata && <span className="cerne-task-row__metadata">{metadata}</span>}
     </div>

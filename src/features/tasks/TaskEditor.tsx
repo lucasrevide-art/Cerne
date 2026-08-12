@@ -3,6 +3,7 @@ import type { Task, TaskWhen, Subtask } from "../../types";
 import { useTaskStore } from "../../store/taskStore";
 import { useAreaStore } from "../../store/areaStore";
 import { useProjectStore } from "../../store/projectStore";
+import { useTagStore } from "../../store/tagStore";
 import { Input } from "../../components/Input";
 import { TaskRow } from "../../components/TaskRow";
 import { ConfirmButton } from "../../components/ConfirmButton";
@@ -11,10 +12,7 @@ import "./TaskEditor.css";
 
 const whenOptions: { value: TaskWhen; label: string }[] = [
   { value: null, label: "Nenhum" },
-  { value: "today", label: "Hoje" },
-  { value: "evening", label: "Esta noite" },
   { value: "date", label: "Data" },
-  { value: "someday", label: "Algum dia" },
 ];
 
 const priorityOptions: { value: number; label: string }[] = [
@@ -76,6 +74,8 @@ export function TaskEditor({ task, onClose, onBack }: TaskEditorProps) {
   );
   const areas = useAreaStore((s) => s.areas);
   const projects = useProjectStore((s) => s.projects);
+  const tags = useTagStore((s) => s.tags);
+  const addTag = useTagStore((s) => s.addTag);
   const addSubtask = useTaskStore((s) => s.addSubtask);
   const toggleSubtask = useTaskStore((s) => s.toggleSubtask);
   const removeSubtask = useTaskStore((s) => s.removeSubtask);
@@ -85,6 +85,26 @@ export function TaskEditor({ task, onClose, onBack }: TaskEditorProps) {
   const [title, setTitle] = useState(task.title);
   const [notes, setNotes] = useState(task.notes);
   const [subtaskDraft, setSubtaskDraft] = useState("");
+  const [tagDraft, setTagDraft] = useState("");
+
+  function toggleTaskTag(tagId: string) {
+    const next = task.tagIds.includes(tagId)
+      ? task.tagIds.filter((id) => id !== tagId)
+      : [...task.tagIds, tagId];
+    updateTask(task.id, { tagIds: next });
+  }
+
+  async function handleCreateTag(e: FormEvent) {
+    e.preventDefault();
+    const name = tagDraft.trim();
+    if (!name) return;
+    const existing = tags.find((t) => t.name.toLowerCase() === name.toLowerCase());
+    const tag = existing ?? (await addTag(name));
+    if (!task.tagIds.includes(tag.id)) {
+      updateTask(task.id, { tagIds: [...task.tagIds, tag.id] });
+    }
+    setTagDraft("");
+  }
 
   function commitTitle() {
     const trimmed = title.trim();
@@ -186,7 +206,7 @@ export function TaskEditor({ task, onClose, onBack }: TaskEditorProps) {
       />
 
       <div className="cerne-task-editor__field">
-        <span className="text-caption">Quando</span>
+        <span className="text-caption">Data</span>
         <div className="cerne-task-editor__segmented">
           {whenOptions.map((opt) => (
             <button
@@ -315,6 +335,33 @@ export function TaskEditor({ task, onClose, onBack }: TaskEditorProps) {
             </optgroup>
           )}
         </select>
+      </div>
+
+      <div className="cerne-task-editor__field">
+        <span className="text-caption">Tags</span>
+        {tags.length > 0 && (
+          <div className="cerne-task-editor__tags">
+            {tags.map((tag) => (
+              <button
+                key={tag.id}
+                type="button"
+                className={`cerne-task-editor__tag-chip${
+                  task.tagIds.includes(tag.id) ? " cerne-task-editor__tag-chip--active" : ""
+                }`}
+                onClick={() => toggleTaskTag(tag.id)}
+              >
+                {tag.name}
+              </button>
+            ))}
+          </div>
+        )}
+        <form className="cerne-task-editor__tag-add" onSubmit={handleCreateTag}>
+          <Input
+            placeholder="Nova tag…"
+            value={tagDraft}
+            onChange={(e) => setTagDraft(e.target.value)}
+          />
+        </form>
       </div>
 
       <div className="cerne-task-editor__field">

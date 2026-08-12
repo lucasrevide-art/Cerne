@@ -7,10 +7,8 @@ import { AreaNavList } from "../features/areas/AreaNavList";
 import { supabase } from "../lib/supabase/client";
 import {
   InboxIcon,
-  SunIcon,
+  StarIcon,
   UpcomingIcon,
-  AnytimeIcon,
-  SomedayIcon,
   LogbookIcon,
   SearchIcon,
   BackupIcon,
@@ -26,10 +24,8 @@ interface NavEntry {
 
 const topEntries: NavEntry[] = [
   { id: "inbox", label: "Inbox", icon: InboxIcon },
-  { id: "today", label: "Today", icon: SunIcon },
+  { id: "focus", label: "A Única Coisa", icon: StarIcon },
   { id: "upcoming", label: "Upcoming", icon: UpcomingIcon },
-  { id: "anytime", label: "Anytime", icon: AnytimeIcon },
-  { id: "someday", label: "Someday", icon: SomedayIcon },
 ];
 
 export function Sidebar() {

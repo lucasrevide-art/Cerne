@@ -8,6 +8,7 @@ import { supabase, supabaseConfigured } from "./lib/supabase/client";
 import { useTaskStore } from "./store/taskStore";
 import { useAreaStore } from "./store/areaStore";
 import { useProjectStore } from "./store/projectStore";
+import { useTagStore } from "./store/tagStore";
 
 function App() {
   // undefined = ainda checando a sessão salva; null = sem sessão (mostra login).
@@ -19,6 +20,7 @@ function App() {
   const loadTasks = useTaskStore((s) => s.loadTasks);
   const loadAreas = useAreaStore((s) => s.loadAreas);
   const loadProjects = useProjectStore((s) => s.loadProjects);
+  const loadTags = useTagStore((s) => s.loadTags);
 
   useEffect(() => {
     if (!supabaseConfigured) {
@@ -41,7 +43,8 @@ function App() {
     loadTasks();
     loadAreas();
     loadProjects();
-  }, [session, loadTasks, loadAreas, loadProjects]);
+    loadTags();
+  }, [session, loadTasks, loadAreas, loadProjects, loadTags]);
 
   if (session === undefined) return <div className="cerne-app-loading" />;
   if (recoveryMode) return <ResetPassword onDone={() => setRecoveryMode(false)} />;

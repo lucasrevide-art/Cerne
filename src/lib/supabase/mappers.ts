@@ -1,4 +1,4 @@
-import type { Task, Subtask, Area, Project, Recurrence } from "../../types";
+import type { Task, Subtask, Area, Project, Recurrence, Tag } from "../../types";
 
 /**
  * Conversão entre o formato do banco (snake_case, Postgres) e os tipos de
@@ -84,6 +84,7 @@ export interface TaskRow {
   project_id: string | null;
   area_id: string | null;
   tag_ids: string[];
+  is_focus: boolean;
   created_at: string;
   completed_at: string | null;
   sort_order: number;
@@ -105,6 +106,7 @@ export function taskFromRow(row: TaskRow): Task {
     projectId: row.project_id,
     areaId: row.area_id,
     tagIds: row.tag_ids ?? [],
+    isFocus: row.is_focus ?? false,
     createdAt: row.created_at,
     completedAt: row.completed_at,
     sortOrder: row.sort_order,
@@ -126,6 +128,7 @@ export function taskToRow(task: Partial<Task>): Record<string, unknown> {
   if (task.projectId !== undefined) row.project_id = task.projectId;
   if (task.areaId !== undefined) row.area_id = task.areaId;
   if (task.tagIds !== undefined) row.tag_ids = task.tagIds;
+  if (task.isFocus !== undefined) row.is_focus = task.isFocus;
   if (task.completedAt !== undefined) row.completed_at = task.completedAt;
   if (task.sortOrder !== undefined) row.sort_order = task.sortOrder;
   return row;
@@ -167,4 +170,14 @@ export function recurrenceFromRow(row: RecurrenceRow): Recurrence {
     weekdays: row.weekdays ?? [],
     nextDate: row.next_date,
   };
+}
+
+export interface TagRow {
+  id: string;
+  name: string;
+  color: string;
+}
+
+export function tagFromRow(row: TagRow): Tag {
+  return { id: row.id, name: row.name, color: row.color };
 }

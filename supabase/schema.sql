@@ -11,6 +11,7 @@ create extension if not exists pgcrypto;
 drop table if exists recurrences cascade;
 drop table if exists subtasks cascade;
 drop table if exists tasks cascade;
+drop table if exists tags cascade;
 drop table if exists projects cascade;
 drop table if exists areas cascade;
 
@@ -58,9 +59,19 @@ create table tasks (
   project_id uuid references projects(id) on delete set null,
   area_id uuid references areas(id) on delete set null,
   tag_ids uuid[] not null default '{}',
+  is_focus boolean not null default false,
   created_at timestamptz not null default now(),
   completed_at timestamptz,
   sort_order double precision not null default (extract(epoch from now()) * 1000)
+);
+
+-- TAGS (rótulos livres, criados pelo próprio usuário) ----------------------
+create table tags (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade default auth.uid(),
+  name text not null,
+  color text not null default '',
+  unique (user_id, name)
 );
 
 -- SUBTAREFAS ------------------------------------------------------------
@@ -92,6 +103,7 @@ create index tasks_project_id_idx on tasks(project_id);
 create index tasks_area_id_idx on tasks(area_id);
 create index subtasks_task_id_idx on subtasks(task_id);
 create index projects_area_id_idx on projects(area_id);
+create index tags_user_id_idx on tags(user_id);
 
 -- Row Level Security: cada usuário só enxerga/edita os próprios dados -----
 alter table areas enable row level security;
@@ -99,6 +111,7 @@ alter table projects enable row level security;
 alter table tasks enable row level security;
 alter table subtasks enable row level security;
 alter table recurrences enable row level security;
+alter table tags enable row level security;
 
 create policy "areas: own rows" on areas
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
@@ -110,6 +123,8 @@ create policy "subtasks: own rows" on subtasks
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 create policy "recurrences: own rows" on recurrences
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+create policy "tags: own rows" on tags
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- Realtime: transmite INSERT/UPDATE/DELETE pra sincronizar entre abas/dispositivos
-alter publication supabase_realtime add table areas, projects, tasks, subtasks, recurrences;
+alter publication supabase_realtime add table areas, projects, tasks, subtasks, recurrences, tags;

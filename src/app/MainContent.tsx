@@ -9,21 +9,8 @@ import { LogbookList } from "../features/tasks/LogbookList";
 import { AreaView } from "../features/areas/AreaView";
 import { ProjectView } from "../features/projects/ProjectView";
 import { UpcomingView } from "../features/upcoming/UpcomingView";
-import {
-  isOpen,
-  isTodayTask,
-  isAnytimeTask,
-  isSomedayTask,
-  isLogbookTask,
-  sortTodayTasks,
-} from "../features/tasks/taskFilters";
-import {
-  InboxIcon,
-  SunIcon,
-  AnytimeIcon,
-  SomedayIcon,
-  MenuIcon,
-} from "../components/icons";
+import { isOpen, isFocusTask, isLogbookTask } from "../features/tasks/taskFilters";
+import { InboxIcon, StarIcon, MenuIcon } from "../components/icons";
 import "./MainContent.css";
 
 export function MainContent() {
@@ -65,16 +52,18 @@ export function MainContent() {
           />
         );
         break;
-      case "today":
-        title = "Today";
-        description = "O compromisso de hoje.";
+      case "focus":
+        title = "A Única Coisa";
+        description = "O que você decidiu priorizar agora, entre tudo o mais.";
         body = (
           <TaskList
-            tasks={sortTodayTasks(tasks.filter((t) => isTodayTask(t)))}
-            quickAddDefaults={{ when: "today" }}
-            emptyIcon={<SunIcon width={28} height={28} />}
-            emptyTitle="Está tudo em dia por aqui."
-            emptyDescription="Nada planejado para hoje."
+            tasks={tasks.filter(isFocusTask)}
+            showProjectTag
+            reorderable
+            hideQuickAdd
+            emptyIcon={<StarIcon width={28} height={28} />}
+            emptyTitle="Nada marcado como prioridade."
+            emptyDescription="Abra uma tarefa e marque a estrela pra trazê-la pra cá."
           />
         );
         break;
@@ -82,32 +71,6 @@ export function MainContent() {
         title = "Upcoming";
         description = "O que vem pela frente.";
         body = <UpcomingView />;
-        break;
-      case "anytime":
-        title = "Anytime";
-        description = "Backlog ativo, sem data definida.";
-        body = (
-          <TaskList
-            tasks={tasks.filter((t) => isAnytimeTask(t))}
-            reorderable
-            emptyIcon={<AnytimeIcon width={28} height={28} />}
-            emptyTitle="Está tudo em dia por aqui."
-            emptyDescription="Capture algo acima."
-          />
-        );
-        break;
-      case "someday":
-        title = "Someday";
-        description = "Adiado de propósito, fora do radar ativo.";
-        body = (
-          <TaskList
-            tasks={tasks.filter((t) => isSomedayTask(t))}
-            quickAddDefaults={{ when: "someday" }}
-            reorderable
-            emptyIcon={<SomedayIcon width={28} height={28} />}
-            emptyTitle="Nada adiado por enquanto."
-          />
-        );
         break;
       case "logbook":
         title = "Logbook";

@@ -2,8 +2,9 @@ import type { Task, Subtask } from "../../types";
 import { useTaskStore } from "../../store/taskStore";
 import { useAreaStore } from "../../store/areaStore";
 import { useProjectStore } from "../../store/projectStore";
+import { useTagStore } from "../../store/tagStore";
 import { TaskRow } from "../../components/TaskRow";
-import { PencilIcon, RepeatIcon } from "../../components/icons";
+import { PencilIcon, RepeatIcon, StarIcon, StarFilledIcon } from "../../components/icons";
 import { describeRecurrence } from "../../lib/recurrence/recurrenceEngine";
 import "./TaskPreview.css";
 
@@ -34,6 +35,7 @@ interface TaskPreviewProps {
 /** Só as informações essenciais — o formulário completo fica atrás do ícone de editar. */
 export function TaskPreview({ task, onEdit }: TaskPreviewProps) {
   const toggleComplete = useTaskStore((s) => s.toggleComplete);
+  const updateTask = useTaskStore((s) => s.updateTask);
   const subtasks = useTaskStore((s) => s.subtasksByTask[task.id] ?? EMPTY_SUBTASKS);
   const toggleSubtask = useTaskStore((s) => s.toggleSubtask);
   const recurrence = useTaskStore((s) => s.recurrencesByTask[task.id]);
@@ -41,6 +43,8 @@ export function TaskPreview({ task, onEdit }: TaskPreviewProps) {
   const project = useProjectStore((s) =>
     task.projectId ? s.projects.find((p) => p.id === task.projectId) : undefined,
   );
+  const allTags = useTagStore((s) => s.tags);
+  const taskTags = allTags.filter((t) => task.tagIds.includes(t.id));
 
   const chips: string[] = [];
   if (task.when === "date" && task.whenDate) chips.push(task.whenDate);
@@ -73,6 +77,15 @@ export function TaskPreview({ task, onEdit }: TaskPreviewProps) {
         </h2>
         <button
           type="button"
+          className={`cerne-task-preview__focus${task.isFocus ? " cerne-task-preview__focus--active" : ""}`}
+          aria-label={task.isFocus ? "Tirar de A Única Coisa" : "Marcar como A Única Coisa"}
+          aria-pressed={task.isFocus}
+          onClick={() => updateTask(task.id, { isFocus: !task.isFocus })}
+        >
+          {task.isFocus ? <StarFilledIcon width={16} height={16} /> : <StarIcon width={16} height={16} />}
+        </button>
+        <button
+          type="button"
           className="cerne-task-preview__edit"
           aria-label="Editar tarefa"
           onClick={onEdit}
@@ -81,13 +94,18 @@ export function TaskPreview({ task, onEdit }: TaskPreviewProps) {
         </button>
       </div>
 
-      {(chips.length > 0 || recurrence || area || project) && (
+      {(chips.length > 0 || recurrence || area || project || taskTags.length > 0) && (
         <div className="cerne-task-preview__chips">
           {(project || area) && (
             <span className="cerne-task-preview__chip cerne-task-preview__chip--tag">
               {project?.name ?? area?.name}
             </span>
           )}
+          {taskTags.map((tag) => (
+            <span key={tag.id} className="cerne-task-preview__chip cerne-task-preview__chip--tag">
+              {tag.name}
+            </span>
+          ))}
           {recurrence && (
             <span className="cerne-task-preview__chip">
               <RepeatIcon width={11} height={11} />

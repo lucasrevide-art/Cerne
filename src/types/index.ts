@@ -24,6 +24,8 @@ export interface Task {
   projectId: string | null;
   areaId: string | null;
   tagIds: string[];
+  /** Marca a tarefa como "A Única Coisa" — o subconjunto priorizado agora, independente de área/projeto. */
+  isFocus: boolean;
   createdAt: string;
   completedAt: string | null;
   sortOrder: number;

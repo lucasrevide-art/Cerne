@@ -4,6 +4,7 @@ import { supabase } from "../../lib/supabase/client";
 import { useTaskStore } from "../../store/taskStore";
 import { useAreaStore } from "../../store/areaStore";
 import { useProjectStore } from "../../store/projectStore";
+import { useTagStore } from "../../store/tagStore";
 
 interface RealtimeSyncProps {
   session: Session;
@@ -22,11 +23,13 @@ export function RealtimeSync({ session }: RealtimeSyncProps) {
   const loadTasks = useTaskStore((s) => s.loadTasks);
   const loadAreas = useAreaStore((s) => s.loadAreas);
   const loadProjects = useProjectStore((s) => s.loadProjects);
+  const loadTags = useTagStore((s) => s.loadTags);
 
   useEffect(() => {
     let taskTimer: number | undefined;
     let areaTimer: number | undefined;
     let projectTimer: number | undefined;
+    let tagTimer: number | undefined;
 
     function scheduleTasks() {
       window.clearTimeout(taskTimer);
@@ -40,6 +43,10 @@ export function RealtimeSync({ session }: RealtimeSyncProps) {
       window.clearTimeout(projectTimer);
       projectTimer = window.setTimeout(() => void loadProjects(), REFETCH_DEBOUNCE_MS);
     }
+    function scheduleTags() {
+      window.clearTimeout(tagTimer);
+      tagTimer = window.setTimeout(() => void loadTags(), REFETCH_DEBOUNCE_MS);
+    }
 
     const channel = supabase
       .channel(`cerne-sync-${session.user.id}`)
@@ -48,15 +55,17 @@ export function RealtimeSync({ session }: RealtimeSyncProps) {
       .on("postgres_changes", { event: "*", schema: "public", table: "recurrences" }, scheduleTasks)
       .on("postgres_changes", { event: "*", schema: "public", table: "areas" }, scheduleAreas)
       .on("postgres_changes", { event: "*", schema: "public", table: "projects" }, scheduleProjects)
+      .on("postgres_changes", { event: "*", schema: "public", table: "tags" }, scheduleTags)
       .subscribe();
 
     return () => {
       window.clearTimeout(taskTimer);
       window.clearTimeout(areaTimer);
       window.clearTimeout(projectTimer);
+      window.clearTimeout(tagTimer);
       void supabase.removeChannel(channel);
     };
-  }, [session.user.id, loadTasks, loadAreas, loadProjects]);
+  }, [session.user.id, loadTasks, loadAreas, loadProjects, loadTags]);
 
   return null;
 }
