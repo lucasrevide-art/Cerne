@@ -230,6 +230,15 @@ export function BackupIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function KeyIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="6" cy="12" r="3.25" />
+      <path d="M8.3 9.7 15 3M12.5 5.5 14.5 7.5M10.5 7.5 12 9" />
+    </svg>
+  );
+}
+
 export function LogoutIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...props}>

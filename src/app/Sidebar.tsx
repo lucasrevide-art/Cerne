@@ -3,6 +3,7 @@ import { useNavigationStore, type FixedView } from "../store/navigationStore";
 import { useCommandPaletteStore } from "../store/commandPaletteStore";
 import { useUiStore } from "../store/uiStore";
 import { useBackupPanelStore } from "../store/backupPanelStore";
+import { useChangePasswordPanelStore } from "../store/changePasswordPanelStore";
 import { AreaNavList } from "../features/areas/AreaNavList";
 import { supabase } from "../lib/supabase/client";
 import {
@@ -12,6 +13,7 @@ import {
   LogbookIcon,
   SearchIcon,
   BackupIcon,
+  KeyIcon,
   LogoutIcon,
 } from "../components/icons";
 import "./Sidebar.css";
@@ -34,6 +36,7 @@ export function Sidebar() {
   const openCommandPalette = useCommandPaletteStore((s) => s.open);
   const sidebarOpen = useUiStore((s) => s.sidebarOpen);
   const openBackupPanel = useBackupPanelStore((s) => s.open);
+  const openChangePasswordPanel = useChangePasswordPanelStore((s) => s.open);
 
   return (
     <nav
@@ -98,6 +101,12 @@ export function Sidebar() {
           <button type="button" className="cerne-sidebar__item" onClick={openBackupPanel}>
             <BackupIcon width={18} height={18} />
             <span>Backup</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" className="cerne-sidebar__item" onClick={openChangePasswordPanel}>
+            <KeyIcon width={18} height={18} />
+            <span>Trocar senha</span>
           </button>
         </li>
         <li>

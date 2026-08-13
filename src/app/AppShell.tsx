@@ -5,6 +5,7 @@ import { CommandPalette } from "../features/search/CommandPalette";
 import { ShortcutsHelp } from "./ShortcutsHelp";
 import { PomodoroWidget } from "../features/pomodoro/PomodoroWidget";
 import { BackupPanel } from "../features/backup/BackupPanel";
+import { ChangePasswordPanel } from "../features/auth/ChangePasswordPanel";
 import { useNavigationStore } from "../store/navigationStore";
 import { useUiStore } from "../store/uiStore";
 import "./AppShell.css";
@@ -35,6 +36,7 @@ export function AppShell() {
       <ShortcutsHelp />
       <PomodoroWidget />
       <BackupPanel />
+      <ChangePasswordPanel />
     </div>
   );
 }
