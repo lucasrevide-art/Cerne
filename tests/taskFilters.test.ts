@@ -8,6 +8,7 @@ import {
   resolveTaskRoute,
 } from "../src/features/tasks/taskFilters.ts";
 import type { Task } from "../src/types/index.ts";
+import { localDateKey, tomorrowDateKey } from "../src/lib/date/localDate.ts";
 
 function task(overrides: Partial<Task> = {}): Task {
   return {
@@ -65,4 +66,10 @@ test("Hoje separa atrasadas do trabalho previsto para o dia", () => {
   assert.equal(isDueTodayTask(overdue, today), false);
   assert.equal(isOverdueTask(dueToday, today), false);
   assert.equal(isDueTodayTask(dueToday, today), true);
+});
+
+test("datas rápidas respeitam o calendário local inclusive na virada do mês", () => {
+  const endOfMonth = new Date(2026, 7, 31, 23, 30);
+  assert.equal(localDateKey(endOfMonth), "2026-08-31");
+  assert.equal(tomorrowDateKey(endOfMonth), "2026-09-01");
 });

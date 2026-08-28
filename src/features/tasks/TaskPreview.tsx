@@ -6,6 +6,7 @@ import { useTagStore } from "../../store/tagStore";
 import { TaskRow } from "../../components/TaskRow";
 import { PencilIcon, RepeatIcon, StarIcon, StarFilledIcon } from "../../components/icons";
 import { describeRecurrence } from "../../lib/recurrence/recurrenceEngine";
+import { tomorrowDateKey } from "../../lib/date/localDate";
 import "./TaskPreview.css";
 
 const priorityLabel: Record<number, string> = {
@@ -39,10 +40,12 @@ export function TaskPreview({ task, onEdit }: TaskPreviewProps) {
   const subtasks = useTaskStore((s) => s.subtasksByTask[task.id] ?? EMPTY_SUBTASKS);
   const toggleSubtask = useTaskStore((s) => s.toggleSubtask);
   const recurrence = useTaskStore((s) => s.recurrencesByTask[task.id]);
-  const area = useAreaStore((s) => (task.areaId ? s.areas.find((a) => a.id === task.areaId) : undefined));
-  const project = useProjectStore((s) =>
-    task.projectId ? s.projects.find((p) => p.id === task.projectId) : undefined,
-  );
+  const areas = useAreaStore((s) => s.areas);
+  const projects = useProjectStore((s) => s.projects);
+  const area = task.areaId ? areas.find((item) => item.id === task.areaId) : undefined;
+  const project = task.projectId
+    ? projects.find((item) => item.id === task.projectId)
+    : undefined;
   const allTags = useTagStore((s) => s.tags);
   const taskTags = allTags.filter((t) => task.tagIds.includes(t.id));
 
@@ -117,6 +120,59 @@ export function TaskPreview({ task, onEdit }: TaskPreviewProps) {
               {chip}
             </span>
           ))}
+        </div>
+      )}
+
+      {task.status === "open" && (
+        <div className="cerne-task-preview__triage" aria-label="Planejar tarefa">
+          <span className="text-caption">Planejar</span>
+          <div className="cerne-task-preview__triage-actions">
+            <button
+              type="button"
+              className={`cerne-task-preview__triage-button${
+                task.when === "today" ? " cerne-task-preview__triage-button--active" : ""
+              }`}
+              onClick={() => updateTask(task.id, { when: "today", whenDate: null })}
+            >
+              Hoje
+            </button>
+            <button
+              type="button"
+              className="cerne-task-preview__triage-button"
+              onClick={() =>
+                updateTask(task.id, { when: "date", whenDate: tomorrowDateKey() })
+              }
+            >
+              Amanhã
+            </button>
+            <select
+              className="cerne-task-preview__triage-select"
+              aria-label="Mover para área ou projeto"
+              value={task.projectId ? `project:${task.projectId}` : task.areaId ? `area:${task.areaId}` : ""}
+              onChange={(event) => {
+                const value = event.target.value;
+                if (value.startsWith("area:")) {
+                  updateTask(task.id, { areaId: value.slice(5), projectId: null });
+                } else if (value.startsWith("project:")) {
+                  updateTask(task.id, { areaId: null, projectId: value.slice(8) });
+                }
+              }}
+            >
+              <option value="">Organizar em…</option>
+              {areas.map((item) => (
+                <optgroup key={item.id} label={item.name}>
+                  <option value={`area:${item.id}`}>{item.name}</option>
+                  {projects
+                    .filter((candidate) => candidate.areaId === item.id)
+                    .map((candidate) => (
+                      <option key={candidate.id} value={`project:${candidate.id}`}>
+                        {candidate.name}
+                      </option>
+                    ))}
+                </optgroup>
+              ))}
+            </select>
+          </div>
         </div>
       )}
 
