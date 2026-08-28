@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { isInboxTask, isTodayTask, resolveTaskRoute } from "../src/features/tasks/taskFilters.ts";
+import {
+  isDueTodayTask,
+  isInboxTask,
+  isOverdueTask,
+  isTodayTask,
+  resolveTaskRoute,
+} from "../src/features/tasks/taskFilters.ts";
 import type { Task } from "../src/types/index.ts";
 
 function task(overrides: Partial<Task> = {}): Task {
@@ -48,4 +54,15 @@ test("Busca encaminha tarefa diária para Hoje antes de Próximas", () => {
     resolveTaskRoute(task({ when: "today" })),
     { type: "fixed", view: "today" },
   );
+});
+
+test("Hoje separa atrasadas do trabalho previsto para o dia", () => {
+  const today = "2026-08-28";
+  const overdue = task({ when: "date", whenDate: "2026-08-27" });
+  const dueToday = task({ deadline: today });
+
+  assert.equal(isOverdueTask(overdue, today), true);
+  assert.equal(isDueTodayTask(overdue, today), false);
+  assert.equal(isOverdueTask(dueToday, today), false);
+  assert.equal(isDueTodayTask(dueToday, today), true);
 });

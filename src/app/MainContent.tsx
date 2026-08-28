@@ -9,8 +9,9 @@ import { LogbookList } from "../features/tasks/LogbookList";
 import { AreaView } from "../features/areas/AreaView";
 import { ProjectView } from "../features/projects/ProjectView";
 import { UpcomingView } from "../features/upcoming/UpcomingView";
-import { isFocusTask, isInboxTask, isLogbookTask, isTodayTask } from "../features/tasks/taskFilters";
-import { InboxIcon, StarIcon, SunIcon, MenuIcon } from "../components/icons";
+import { TodayView } from "../features/today/TodayView";
+import { isFocusTask, isInboxTask, isLogbookTask } from "../features/tasks/taskFilters";
+import { InboxIcon, StarIcon, MenuIcon } from "../components/icons";
 import "./MainContent.css";
 
 export function MainContent() {
@@ -55,16 +56,7 @@ export function MainContent() {
       case "today":
         title = "Hoje";
         description = "Tarefas agendadas, vencidas ou com prazo para hoje.";
-        body = (
-          <TaskList
-            tasks={tasks.filter((task) => isTodayTask(task))}
-            quickAddDefaults={{ when: "today" }}
-            showProjectTag
-            emptyIcon={<SunIcon width={28} height={28} />}
-            emptyTitle="Nada previsto para hoje."
-            emptyDescription="Adicione uma tarefa ou aproveite para processar a Inbox."
-          />
-        );
+        body = <TodayView />;
         break;
       case "focus":
         title = "A Única Coisa";

@@ -6,6 +6,8 @@ import { useBackupPanelStore } from "../store/backupPanelStore";
 import { useChangePasswordPanelStore } from "../store/changePasswordPanelStore";
 import { AreaNavList } from "../features/areas/AreaNavList";
 import { supabase } from "../lib/supabase/client";
+import { useTaskStore } from "../store/taskStore";
+import { isInboxTask, isTodayTask } from "../features/tasks/taskFilters";
 import {
   InboxIcon,
   SunIcon,
@@ -41,6 +43,11 @@ export function Sidebar() {
   const sidebarOpen = useUiStore((s) => s.sidebarOpen);
   const openBackupPanel = useBackupPanelStore((s) => s.open);
   const openChangePasswordPanel = useChangePasswordPanelStore((s) => s.open);
+  const tasks = useTaskStore((s) => s.tasks);
+  const taskCounts: Partial<Record<FixedView, number>> = {
+    inbox: tasks.filter(isInboxTask).length,
+    today: tasks.filter((task) => isTodayTask(task)).length,
+  };
 
   return (
     <nav
@@ -75,6 +82,11 @@ export function Sidebar() {
             >
               <Icon width={18} height={18} />
               <span>{label}</span>
+              {taskCounts[id] !== undefined && taskCounts[id]! > 0 && (
+                <span className="cerne-sidebar__count" aria-label={`${taskCounts[id]} tarefas`}>
+                  {taskCounts[id]}
+                </span>
+              )}
             </button>
           </li>
         ))}

@@ -39,6 +39,19 @@ export function isTodayTask(task: Task, today = localDateKey()): boolean {
   return Boolean(task.deadline && task.deadline <= today);
 }
 
+/** Tarefa aberta cuja data agendada ou prazo já passou. */
+export function isOverdueTask(task: Task, today = localDateKey()): boolean {
+  if (!isOpen(task)) return false;
+  const scheduledOverdue = task.when === "date" && Boolean(task.whenDate && task.whenDate < today);
+  const deadlineOverdue = Boolean(task.deadline && task.deadline < today);
+  return scheduledOverdue || deadlineOverdue;
+}
+
+/** Parte da lente Hoje que vence ou foi agendada exatamente para o dia atual. */
+export function isDueTodayTask(task: Task, today = localDateKey()): boolean {
+  return isTodayTask(task, today) && !isOverdueTask(task, today);
+}
+
 /** Qualquer tarefa com data (agendada ou prazo) — o que aparece no calendário. */
 export function isUpcomingTask(task: Task): boolean {
   if (!isOpen(task)) return false;
