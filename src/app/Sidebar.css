@@ -104,6 +104,39 @@
   background: var(--color-border);
 }
 
+.cerne-sidebar__secondary {
+  margin-bottom: auto;
+}
+
+.cerne-sidebar__settings {
+  padding-top: var(--space-4);
+}
+
+.cerne-sidebar__settings > summary {
+  list-style: none;
+}
+
+.cerne-sidebar__settings > summary::-webkit-details-marker {
+  display: none;
+}
+
+.cerne-sidebar__settings > summary span {
+  flex: 1;
+}
+
+.cerne-sidebar__settings-chevron {
+  transition: transform var(--motion-duration-fast) var(--motion-ease);
+}
+
+.cerne-sidebar__settings[open] .cerne-sidebar__settings-chevron {
+  transform: rotate(90deg);
+}
+
+.cerne-sidebar__settings-list {
+  padding-top: var(--space-1);
+  padding-left: var(--space-5);
+}
+
 .cerne-sidebar__section-header {
   display: flex;
   align-items: center;

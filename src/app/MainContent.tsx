@@ -9,8 +9,8 @@ import { LogbookList } from "../features/tasks/LogbookList";
 import { AreaView } from "../features/areas/AreaView";
 import { ProjectView } from "../features/projects/ProjectView";
 import { UpcomingView } from "../features/upcoming/UpcomingView";
-import { isOpen, isFocusTask, isLogbookTask } from "../features/tasks/taskFilters";
-import { InboxIcon, StarIcon, MenuIcon } from "../components/icons";
+import { isFocusTask, isInboxTask, isLogbookTask, isTodayTask } from "../features/tasks/taskFilters";
+import { InboxIcon, StarIcon, SunIcon, MenuIcon } from "../components/icons";
 import "./MainContent.css";
 
 export function MainContent() {
@@ -40,21 +40,35 @@ export function MainContent() {
     switch (route.view) {
       case "inbox":
         title = "Inbox";
-        description = "Panorama geral: todas as tarefas em aberto.";
+        description = "Capturas que ainda precisam ser organizadas.";
         body = (
           <TaskList
-            tasks={tasks.filter(isOpen)}
+            tasks={tasks.filter(isInboxTask)}
             showProjectTag
             reorderable
             emptyIcon={<InboxIcon width={28} height={28} />}
-            emptyTitle="Está tudo em dia por aqui."
-            emptyDescription="Capture qualquer coisa acima — classificar é opcional."
+            emptyTitle="Inbox processada."
+            emptyDescription="Capture algo acima; depois escolha área, projeto ou quando fazer."
+          />
+        );
+        break;
+      case "today":
+        title = "Hoje";
+        description = "Tarefas agendadas, vencidas ou com prazo para hoje.";
+        body = (
+          <TaskList
+            tasks={tasks.filter((task) => isTodayTask(task))}
+            quickAddDefaults={{ when: "today" }}
+            showProjectTag
+            emptyIcon={<SunIcon width={28} height={28} />}
+            emptyTitle="Nada previsto para hoje."
+            emptyDescription="Adicione uma tarefa ou aproveite para processar a Inbox."
           />
         );
         break;
       case "focus":
         title = "A Única Coisa";
-        description = "O que você decidiu priorizar agora, entre tudo o mais.";
+        description = "Sua prioridade principal agora — independente da área ou do projeto.";
         body = (
           <TaskList
             tasks={tasks.filter(isFocusTask)}
@@ -63,17 +77,17 @@ export function MainContent() {
             hideQuickAdd
             emptyIcon={<StarIcon width={28} height={28} />}
             emptyTitle="Nada marcado como prioridade."
-            emptyDescription="Abra uma tarefa e marque a estrela pra trazê-la pra cá."
+            emptyDescription="Abra uma tarefa e marque a estrela para definir seu foco principal."
           />
         );
         break;
       case "upcoming":
-        title = "Upcoming";
+        title = "Próximas";
         description = "O que vem pela frente.";
         body = <UpcomingView />;
         break;
       case "logbook":
-        title = "Logbook";
+        title = "Concluídas";
         description = "O que já foi concluído, por dia.";
         body = <LogbookList tasks={tasks.filter(isLogbookTask)} />;
         break;

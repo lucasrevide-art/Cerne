@@ -28,7 +28,7 @@ export function AreaView({ areaId }: AreaViewProps) {
   // isso o rascunho local de uma área vazaria pra outra.
   useEffect(() => {
     setNotes(area?.notes ?? "");
-  }, [areaId]);
+  }, [areaId, area?.notes]);
 
   function commitNotes() {
     if (area && notes !== area.notes) updateArea(area.id, { notes });

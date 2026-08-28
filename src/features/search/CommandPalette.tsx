@@ -20,6 +20,7 @@ import {
   ProjectIcon,
   AreasIcon,
   InboxIcon,
+  SunIcon,
   StarIcon,
   UpcomingIcon,
   LogbookIcon,
@@ -40,10 +41,19 @@ interface ResultItem {
 
 const fixedViewCommands: { view: FixedView; label: string; icon: ReactNode }[] = [
   { view: "inbox", label: "Ir para Inbox", icon: <InboxIcon width={16} height={16} /> },
+  { view: "today", label: "Ir para Hoje", icon: <SunIcon width={16} height={16} /> },
   { view: "focus", label: "Ir para A Única Coisa", icon: <StarIcon width={16} height={16} /> },
-  { view: "upcoming", label: "Ir para Upcoming", icon: <UpcomingIcon width={16} height={16} /> },
-  { view: "logbook", label: "Ir para Logbook", icon: <LogbookIcon width={16} height={16} /> },
+  { view: "upcoming", label: "Ir para Próximas", icon: <UpcomingIcon width={16} height={16} /> },
+  { view: "logbook", label: "Ir para Concluídas", icon: <LogbookIcon width={16} height={16} /> },
 ];
+
+const viewLabel: Record<FixedView, string> = {
+  inbox: "Inbox",
+  today: "Hoje",
+  focus: "A Única Coisa",
+  upcoming: "Próximas",
+  logbook: "Concluídas",
+};
 
 export function CommandPalette() {
   const isOpen = useCommandPaletteStore((s) => s.isOpen);
@@ -88,13 +98,6 @@ function CommandPaletteContent({ onClose }: { onClose: () => void }) {
     for (const area of areas) map.set(area.id, area.name);
     return map;
   }, [areas]);
-
-  const viewLabel: Record<FixedView, string> = {
-    inbox: "Inbox",
-    focus: "A Única Coisa",
-    upcoming: "Upcoming",
-    logbook: "Logbook",
-  };
 
   const allItems = useMemo<ResultItem[]>(() => {
     const commandItems: ResultItem[] = fixedViewCommands.map((c) => ({

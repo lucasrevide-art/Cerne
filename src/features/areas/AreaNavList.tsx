@@ -61,11 +61,12 @@ export function AreaNavList() {
   return (
     <div className="cerne-area-nav">
       <div className="cerne-area-nav__header">
-        <span className="text-caption">Areas</span>
+        <span className="text-caption">Áreas</span>
         <button
           type="button"
           className="cerne-area-nav__add"
           aria-label="Nova área"
+          title="Nova área"
           onClick={() => setAddingArea((v) => !v)}
         >
           +
@@ -125,6 +126,7 @@ export function AreaNavList() {
                   type="button"
                   className="cerne-area-nav__add cerne-area-nav__add--project"
                   aria-label="Novo projeto"
+                  title={`Novo projeto em ${area.name}`}
                   onClick={() => {
                     setExpanded((current) => new Set(current).add(area.id));
                     setAddingProjectFor(area.id);

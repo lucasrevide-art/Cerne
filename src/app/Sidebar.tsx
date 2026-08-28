@@ -8,6 +8,7 @@ import { AreaNavList } from "../features/areas/AreaNavList";
 import { supabase } from "../lib/supabase/client";
 import {
   InboxIcon,
+  SunIcon,
   StarIcon,
   UpcomingIcon,
   LogbookIcon,
@@ -15,6 +16,8 @@ import {
   BackupIcon,
   KeyIcon,
   LogoutIcon,
+  SettingsIcon,
+  ChevronRightIcon,
 } from "../components/icons";
 import "./Sidebar.css";
 
@@ -26,8 +29,9 @@ interface NavEntry {
 
 const topEntries: NavEntry[] = [
   { id: "inbox", label: "Inbox", icon: InboxIcon },
+  { id: "today", label: "Hoje", icon: SunIcon },
   { id: "focus", label: "A Única Coisa", icon: StarIcon },
-  { id: "upcoming", label: "Upcoming", icon: UpcomingIcon },
+  { id: "upcoming", label: "Próximas", icon: UpcomingIcon },
 ];
 
 export function Sidebar() {
@@ -57,7 +61,7 @@ export function Sidebar() {
         <kbd className="cerne-sidebar__search-hint">⌘K</kbd>
       </button>
 
-      <ul className="cerne-sidebar__list">
+      <ul className="cerne-sidebar__list cerne-sidebar__secondary">
         {topEntries.map(({ id, label, icon: Icon }) => (
           <li key={id}>
             <button
@@ -94,32 +98,42 @@ export function Sidebar() {
             onClick={() => setFixedView("logbook")}
           >
             <LogbookIcon width={18} height={18} />
-            <span>Logbook</span>
-          </button>
-        </li>
-        <li>
-          <button type="button" className="cerne-sidebar__item" onClick={openBackupPanel}>
-            <BackupIcon width={18} height={18} />
-            <span>Backup</span>
-          </button>
-        </li>
-        <li>
-          <button type="button" className="cerne-sidebar__item" onClick={openChangePasswordPanel}>
-            <KeyIcon width={18} height={18} />
-            <span>Trocar senha</span>
-          </button>
-        </li>
-        <li>
-          <button
-            type="button"
-            className="cerne-sidebar__item"
-            onClick={() => void supabase.auth.signOut()}
-          >
-            <LogoutIcon width={18} height={18} />
-            <span>Sair</span>
+            <span>Concluídas</span>
           </button>
         </li>
       </ul>
+
+      <details className="cerne-sidebar__settings">
+        <summary className="cerne-sidebar__item">
+          <SettingsIcon width={18} height={18} />
+          <span>Ajustes</span>
+          <ChevronRightIcon width={12} height={12} className="cerne-sidebar__settings-chevron" />
+        </summary>
+        <ul className="cerne-sidebar__list cerne-sidebar__settings-list">
+          <li>
+            <button type="button" className="cerne-sidebar__item" onClick={openBackupPanel}>
+              <BackupIcon width={18} height={18} />
+              <span>Backup</span>
+            </button>
+          </li>
+          <li>
+            <button type="button" className="cerne-sidebar__item" onClick={openChangePasswordPanel}>
+              <KeyIcon width={18} height={18} />
+              <span>Trocar senha</span>
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              className="cerne-sidebar__item"
+              onClick={() => void supabase.auth.signOut()}
+            >
+              <LogoutIcon width={18} height={18} />
+              <span>Sair</span>
+            </button>
+          </li>
+        </ul>
+      </details>
     </nav>
   );
 }
