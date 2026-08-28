@@ -105,6 +105,12 @@
   font-weight: 500;
 }
 
+.cerne-task-preview__chip--danger {
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
 .cerne-task-preview__notes {
   margin: 0;
   padding-left: 36px;

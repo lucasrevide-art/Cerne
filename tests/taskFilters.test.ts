@@ -8,7 +8,7 @@ import {
   resolveTaskRoute,
 } from "../src/features/tasks/taskFilters.ts";
 import type { Task } from "../src/types/index.ts";
-import { localDateKey, tomorrowDateKey } from "../src/lib/date/localDate.ts";
+import { friendlyDateKey, localDateKey, tomorrowDateKey } from "../src/lib/date/localDate.ts";
 
 function task(overrides: Partial<Task> = {}): Task {
   return {
@@ -72,4 +72,12 @@ test("datas rápidas respeitam o calendário local inclusive na virada do mês",
   const endOfMonth = new Date(2026, 7, 31, 23, 30);
   assert.equal(localDateKey(endOfMonth), "2026-08-31");
   assert.equal(tomorrowDateKey(endOfMonth), "2026-09-01");
+});
+
+test("datas persistidas recebem rótulos fáceis de ler", () => {
+  const reference = new Date(2026, 7, 28, 10, 0);
+  assert.equal(friendlyDateKey("2026-08-28", reference), "Hoje");
+  assert.equal(friendlyDateKey("2026-08-29", reference), "Amanhã");
+  assert.match(friendlyDateKey("2026-09-02", reference), /^2 set/);
+  assert.equal(friendlyDateKey("data-inválida", reference), "data-inválida");
 });

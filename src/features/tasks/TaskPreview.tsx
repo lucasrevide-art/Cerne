@@ -6,7 +6,7 @@ import { useTagStore } from "../../store/tagStore";
 import { TaskRow } from "../../components/TaskRow";
 import { PencilIcon, RepeatIcon, StarIcon, StarFilledIcon } from "../../components/icons";
 import { describeRecurrence } from "../../lib/recurrence/recurrenceEngine";
-import { tomorrowDateKey } from "../../lib/date/localDate";
+import { friendlyDateKey, localDateKey, tomorrowDateKey } from "../../lib/date/localDate";
 import "./TaskPreview.css";
 
 const priorityLabel: Record<number, string> = {
@@ -49,13 +49,22 @@ export function TaskPreview({ task, onEdit }: TaskPreviewProps) {
   const allTags = useTagStore((s) => s.tags);
   const taskTags = allTags.filter((t) => task.tagIds.includes(t.id));
 
-  const chips: string[] = [];
-  if (task.when === "date" && task.whenDate) chips.push(task.whenDate);
-  else if (task.when && whenLabel[task.when]) chips.push(whenLabel[task.when]);
-  if (task.deadline) chips.push(`Prazo ${task.deadline}`);
-  if (task.priority > 0) chips.push(priorityLabel[task.priority]);
+  const chips: { label: string; danger?: boolean }[] = [];
+  const today = localDateKey();
+  if (task.when === "date" && task.whenDate) {
+    chips.push({ label: friendlyDateKey(task.whenDate), danger: task.whenDate < today });
+  } else if (task.when && whenLabel[task.when]) {
+    chips.push({ label: whenLabel[task.when] });
+  }
+  if (task.deadline) {
+    chips.push({
+      label: `Prazo ${friendlyDateKey(task.deadline).toLocaleLowerCase("pt-BR")}`,
+      danger: task.deadline < today,
+    });
+  }
+  if (task.priority > 0) chips.push({ label: priorityLabel[task.priority] });
   if (task.type === "financial" && task.amount !== undefined) {
-    chips.push(currencyFormatter.format(task.amount) + (task.category ? ` · ${task.category}` : ""));
+    chips.push({ label: currencyFormatter.format(task.amount) + (task.category ? ` · ${task.category}` : "") });
   }
 
   return (
@@ -116,8 +125,13 @@ export function TaskPreview({ task, onEdit }: TaskPreviewProps) {
             </span>
           )}
           {chips.map((chip) => (
-            <span key={chip} className="cerne-task-preview__chip">
-              {chip}
+            <span
+              key={chip.label}
+              className={`cerne-task-preview__chip${
+                chip.danger ? " cerne-task-preview__chip--danger" : ""
+              }`}
+            >
+              {chip.label}
             </span>
           ))}
         </div>

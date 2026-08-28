@@ -38,6 +38,16 @@
   gap: 4px;
 }
 
+.cerne-task-item__metadata--overdue,
+.cerne-task-item__overdue-label {
+  color: var(--color-danger);
+}
+
+.cerne-task-item__overdue-label {
+  font-family: var(--font-body);
+  font-weight: 600;
+}
+
 .cerne-task-item__recurrence-icon {
   flex-shrink: 0;
 }

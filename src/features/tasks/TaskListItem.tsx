@@ -8,6 +8,8 @@ import { useNavigationStore } from "../../store/navigationStore";
 import { TaskRow } from "../../components/TaskRow";
 import { RepeatIcon, GripIcon, StarFilledIcon } from "../../components/icons";
 import { describeRecurrence } from "../../lib/recurrence/recurrenceEngine";
+import { friendlyDateKey } from "../../lib/date/localDate";
+import { isOverdueTask } from "./taskFilters";
 import { TaskDetailOverlay } from "./TaskDetailOverlay";
 import "./TaskListItem.css";
 
@@ -31,11 +33,11 @@ const currencyFormatter = new Intl.NumberFormat("pt-BR", {
 function formatMetadataText(task: Task): string | null {
   const parts: string[] = [];
   if (task.when === "date" && task.whenDate) {
-    parts.push(task.whenDate);
+    parts.push(friendlyDateKey(task.whenDate));
   } else if (task.when && whenLabel[task.when]) {
     parts.push(whenLabel[task.when]);
   }
-  if (task.deadline) parts.push(`Prazo ${task.deadline}`);
+  if (task.deadline) parts.push(`Prazo ${friendlyDateKey(task.deadline).toLocaleLowerCase("pt-BR")}`);
   if (task.priority > 0) parts.push(priorityLabel[task.priority]);
   if (task.type === "financial" && task.amount !== undefined) {
     parts.push(
@@ -97,9 +99,10 @@ export function TaskListItem({
 
   const tagLabel = project?.name ?? area?.name;
   const metadataText = formatMetadataText(task);
+  const overdue = isOverdueTask(task);
   const metadata =
     metadataText || recurrence || tagLabel || taskTags.length > 0 ? (
-      <span className="cerne-task-item__metadata">
+      <span className={`cerne-task-item__metadata${overdue ? " cerne-task-item__metadata--overdue" : ""}`}>
         {tagLabel && <span className="cerne-task-item__tag">{tagLabel}</span>}
         {taskTags.map((tag) => (
           <span key={tag.id} className="cerne-task-item__tag cerne-task-item__tag--custom">
@@ -116,6 +119,8 @@ export function TaskListItem({
         )}
         {recurrence && <span>{describeRecurrence(recurrence)}</span>}
         {recurrence && metadataText && <span>·</span>}
+        {overdue && <span className="cerne-task-item__overdue-label">Atrasada</span>}
+        {overdue && metadataText && <span>·</span>}
         {metadataText && <span>{metadataText}</span>}
       </span>
     ) : null;
