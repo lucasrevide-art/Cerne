@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useShortcutsHelpStore } from "../store/shortcutsHelpStore";
 import { Overlay } from "../components/Overlay";
 import "./ShortcutsHelp.css";
@@ -11,27 +10,9 @@ const shortcuts: { combo: string; description: string }[] = [
   { combo: "?", description: "Esta ajuda" },
 ];
 
-function isTypingContext(): boolean {
-  const el = document.activeElement as HTMLElement | null;
-  if (!el) return false;
-  if (["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName)) return true;
-  return el.isContentEditable;
-}
-
 export function ShortcutsHelp() {
   const isOpen = useShortcutsHelpStore((s) => s.isOpen);
   const close = useShortcutsHelpStore((s) => s.close);
-
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "?" && !isTypingContext()) {
-        e.preventDefault();
-        useShortcutsHelpStore.getState().toggle();
-      }
-    }
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
 
   if (!isOpen) return null;
 

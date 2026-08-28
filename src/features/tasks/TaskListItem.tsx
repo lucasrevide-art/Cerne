@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import type { Task } from "../../types";
 import { useTaskStore } from "../../store/taskStore";
 import { useAreaStore } from "../../store/areaStore";
@@ -10,8 +10,11 @@ import { RepeatIcon, GripIcon, StarFilledIcon } from "../../components/icons";
 import { describeRecurrence } from "../../lib/recurrence/recurrenceEngine";
 import { friendlyDateKey } from "../../lib/date/localDate";
 import { isOverdueTask } from "./taskFilters";
-import { TaskDetailOverlay } from "./TaskDetailOverlay";
 import "./TaskListItem.css";
+
+const TaskDetailOverlay = lazy(() =>
+  import("./TaskDetailOverlay").then((module) => ({ default: module.TaskDetailOverlay })),
+);
 
 const priorityLabel: Record<number, string> = {
   1: "Baixa",
@@ -190,7 +193,9 @@ export function TaskListItem({
         />
       </div>
       {open && (
-        <TaskDetailOverlay task={task} onClose={() => setOpen(false)} />
+        <Suspense fallback={null}>
+          <TaskDetailOverlay task={task} onClose={() => setOpen(false)} />
+        </Suspense>
       )}
     </div>
   );

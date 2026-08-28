@@ -62,17 +62,6 @@ export function CommandPalette() {
   const isOpen = useCommandPaletteStore((s) => s.isOpen);
   const close = useCommandPaletteStore((s) => s.close);
 
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        useCommandPaletteStore.getState().toggle();
-      }
-    }
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
   if (!isOpen) return null;
   return <CommandPaletteContent onClose={close} />;
 }
