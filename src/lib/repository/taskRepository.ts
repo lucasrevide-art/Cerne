@@ -80,6 +80,11 @@ export const taskRepository = {
     if (error) throw error;
   },
 
+  async removeCompleted(): Promise<void> {
+    const { error } = await supabase.from("tasks").delete().eq("status", "completed");
+    if (error) throw error;
+  },
+
   async listAllSubtasks(): Promise<Subtask[]> {
     const { data, error } = await supabase.from("subtasks").select("*");
     if (error) throw error;

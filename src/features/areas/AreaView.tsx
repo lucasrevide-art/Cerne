@@ -7,6 +7,7 @@ import { TaskList } from "../tasks/TaskList";
 import { FinancialSummary } from "../finance/FinancialSummary";
 import { AreasIcon } from "../../components/icons";
 import { ConfirmButton } from "../../components/ConfirmButton";
+import { Button } from "../../components/Button";
 import "./AreaView.css";
 
 interface AreaViewProps {
@@ -23,6 +24,7 @@ export function AreaView({ areaId }: AreaViewProps) {
   const setFixedView = useNavigationStore((s) => s.setFixedView);
 
   const [notes, setNotes] = useState(area?.notes ?? "");
+  const [notesStatus, setNotesStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   // AreaView não desmonta ao trocar de área (só o prop areaId muda) — sem
   // isso o rascunho local de uma área vazaria pra outra.
@@ -30,8 +32,19 @@ export function AreaView({ areaId }: AreaViewProps) {
     setNotes(area?.notes ?? "");
   }, [areaId, area?.notes]);
 
-  function commitNotes() {
-    if (area && notes !== area.notes) updateArea(area.id, { notes });
+  useEffect(() => {
+    setNotesStatus("idle");
+  }, [areaId]);
+
+  async function commitNotes() {
+    if (!area || notes === area.notes) return;
+    setNotesStatus("saving");
+    try {
+      await updateArea(area.id, { notes });
+      setNotesStatus("saved");
+    } catch {
+      setNotesStatus("error");
+    }
   }
 
   const projects = allProjects.filter((p) => p.areaId === areaId);
@@ -51,10 +64,27 @@ export function AreaView({ areaId }: AreaViewProps) {
         className="cerne-area-view__notes"
         placeholder="Notas soltas, ideias, o que quiser guardar aqui…"
         value={notes}
-        onChange={(e) => setNotes(e.target.value)}
-        onBlur={commitNotes}
+        onChange={(e) => {
+          setNotes(e.target.value);
+          setNotesStatus("idle");
+        }}
         rows={6}
       />
+
+      <div className="cerne-area-view__notes-actions">
+        <span className={`cerne-area-view__notes-status cerne-area-view__notes-status--${notesStatus}`}>
+          {notesStatus === "saving" && "Salvando…"}
+          {notesStatus === "saved" && "Notas salvas"}
+          {notesStatus === "error" && "Não foi possível salvar"}
+        </span>
+        <Button
+          variant="secondary"
+          disabled={notes === area.notes || notesStatus === "saving"}
+          onClick={() => void commitNotes()}
+        >
+          Salvar notas
+        </Button>
+      </div>
 
       <FinancialSummary tasks={financialScopeTasks} />
 

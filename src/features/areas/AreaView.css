@@ -3,7 +3,7 @@
   width: 100%;
   max-width: 640px;
   min-height: 140px;
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-2);
   padding: var(--space-4);
   border-radius: var(--radius-card);
   border: 1px solid var(--color-border);
@@ -13,6 +13,29 @@
   font-size: var(--text-body-size);
   line-height: var(--text-body-line);
   resize: vertical;
+}
+
+.cerne-area-view__notes-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  max-width: 640px;
+  margin-bottom: var(--space-6);
+}
+
+.cerne-area-view__notes-status {
+  flex: 1;
+  font-size: var(--text-caption-size);
+  color: var(--color-text-tertiary);
+}
+
+.cerne-area-view__notes-status--saved {
+  color: var(--color-success);
+}
+
+.cerne-area-view__notes-status--error {
+  color: var(--color-danger);
 }
 
 .cerne-area-view__notes::placeholder {

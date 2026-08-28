@@ -35,7 +35,8 @@
 .cerne-task-item__metadata {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  line-height: var(--text-body-small-line);
 }
 
 .cerne-task-item__metadata--overdue,

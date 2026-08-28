@@ -41,7 +41,7 @@ export function MainContent() {
     switch (route.view) {
       case "inbox":
         title = "Inbox";
-        description = "Capturas que ainda precisam ser organizadas.";
+        description = "Demandas ainda sem área ou projeto.";
         body = (
           <TaskList
             tasks={tasks.filter(isInboxTask)}
@@ -49,7 +49,7 @@ export function MainContent() {
             reorderable
             emptyIcon={<InboxIcon width={28} height={28} />}
             emptyTitle="Inbox processada."
-            emptyDescription="Capture algo acima; depois escolha área, projeto ou quando fazer."
+            emptyDescription="Capture algo acima; depois escolha uma área ou projeto."
           />
         );
         break;

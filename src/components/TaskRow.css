@@ -62,7 +62,11 @@
 
 .cerne-task-row__metadata {
   flex-shrink: 0;
-  font-family: var(--font-mono);
-  font-size: var(--text-caption-size);
-  color: var(--color-text-tertiary);
+  max-width: 58%;
+  overflow: hidden;
+  font-family: var(--font-body);
+  font-size: var(--text-body-small-size);
+  color: var(--color-text-secondary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

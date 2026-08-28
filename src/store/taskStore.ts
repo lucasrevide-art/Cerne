@@ -28,6 +28,7 @@ interface TaskState {
   updateTask: (id: string, changes: Partial<Task>) => Promise<void>;
   toggleComplete: (id: string) => Promise<void>;
   removeTask: (id: string) => Promise<void>;
+  clearCompleted: () => Promise<void>;
   addSubtask: (taskId: string, title: string) => Promise<void>;
   toggleSubtask: (taskId: string, subtaskId: string) => Promise<void>;
   removeSubtask: (taskId: string, subtaskId: string) => Promise<void>;
@@ -133,6 +134,13 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         recurrencesByTask,
       };
     });
+  },
+
+  clearCompleted: async () => {
+    await taskRepository.removeCompleted();
+    set((state) => ({
+      tasks: state.tasks.filter((task) => task.status !== "completed"),
+    }));
   },
 
   addSubtask: async (taskId, title) => {

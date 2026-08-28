@@ -9,6 +9,22 @@
   margin-bottom: var(--space-2);
 }
 
+.cerne-logbook__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+@media (max-width: 520px) {
+  .cerne-logbook__toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
 .cerne-logbook__rows {
   background: var(--color-surface);
   border: 1px solid var(--color-border);

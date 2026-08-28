@@ -10,9 +10,9 @@ import { friendlyDateKey, localDateKey, tomorrowDateKey } from "../../lib/date/l
 import "./TaskPreview.css";
 
 const priorityLabel: Record<number, string> = {
-  1: "Baixa",
-  2: "Média",
-  3: "Alta",
+  1: "Prioridade baixa",
+  2: "Prioridade média",
+  3: "Prioridade alta",
 };
 
 const whenLabel: Record<string, string> = {
@@ -202,6 +202,32 @@ export function TaskPreview({ task, onEdit }: TaskPreviewProps) {
               </>
             )}
           </div>
+          {allTags.length > 0 && (
+            <div className="cerne-task-preview__triage-tags" aria-label="Etiquetas disponíveis">
+              {allTags.map((tag) => {
+                const selected = task.tagIds.includes(tag.id);
+                return (
+                  <button
+                    key={tag.id}
+                    type="button"
+                    className={`cerne-task-preview__triage-tag${
+                      selected ? " cerne-task-preview__triage-tag--active" : ""
+                    }`}
+                    aria-pressed={selected}
+                    onClick={() =>
+                      updateTask(task.id, {
+                        tagIds: selected
+                          ? task.tagIds.filter((id) => id !== tag.id)
+                          : [...task.tagIds, tag.id],
+                      })
+                    }
+                  >
+                    {tag.name}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 

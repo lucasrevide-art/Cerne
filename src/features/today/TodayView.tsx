@@ -2,10 +2,10 @@ import { useMemo, useState } from "react";
 import { useTaskStore } from "../../store/taskStore";
 import { SunIcon } from "../../components/icons";
 import { TaskList } from "../tasks/TaskList";
-import { isDueTodayTask, isOverdueTask, isTodayTask } from "../tasks/taskFilters";
+import { isOverdueTask, isTodayTask } from "../tasks/taskFilters";
 import "./TodayView.css";
 
-type TodayFilter = "all" | "overdue" | "due";
+type TodayFilter = "all" | "overdue";
 
 export function TodayView() {
   const tasks = useTaskStore((state) => state.tasks);
@@ -16,18 +16,11 @@ export function TodayView() {
     () => todayTasks.filter((task) => isOverdueTask(task)),
     [todayTasks],
   );
-  const dueTasks = useMemo(
-    () => todayTasks.filter((task) => isDueTodayTask(task)),
-    [todayTasks],
-  );
-
-  const visibleTasks =
-    filter === "overdue" ? overdueTasks : filter === "due" ? dueTasks : todayTasks;
+  const visibleTasks = filter === "overdue" ? overdueTasks : todayTasks;
 
   const filters: { id: TodayFilter; label: string; count: number }[] = [
     { id: "all", label: "Tudo", count: todayTasks.length },
     { id: "overdue", label: "Atrasadas", count: overdueTasks.length },
-    { id: "due", label: "Para hoje", count: dueTasks.length },
   ];
 
   return (

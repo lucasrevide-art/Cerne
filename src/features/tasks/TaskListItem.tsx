@@ -17,9 +17,9 @@ const TaskDetailOverlay = lazy(() =>
 );
 
 const priorityLabel: Record<number, string> = {
-  1: "Baixa",
-  2: "Média",
-  3: "Alta",
+  1: "Prioridade baixa",
+  2: "Prioridade média",
+  3: "Prioridade alta",
 };
 
 const whenLabel: Record<string, string> = {

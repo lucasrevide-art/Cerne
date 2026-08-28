@@ -12,16 +12,9 @@ export function isOpen(task: Task): boolean {
   return task.status === "open";
 }
 
-/** Capturas ainda não processadas: sem área, projeto ou decisão de quando fazer. */
+/** Demandas ainda sem área ou projeto; datas não removem a tarefa da Inbox. */
 export function isInboxTask(task: Task): boolean {
-  return (
-    isOpen(task) &&
-    !task.areaId &&
-    !task.projectId &&
-    !task.when &&
-    !task.whenDate &&
-    !task.deadline
-  );
+  return isOpen(task) && !task.areaId && !task.projectId;
 }
 
 function localDateKey(date = new Date()): string {

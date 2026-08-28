@@ -4,6 +4,7 @@ import { TaskRow } from "../../components/TaskRow";
 import { EmptyState } from "../../components/EmptyState";
 import { LogbookIcon } from "../../components/icons";
 import { groupLogbookTasks } from "./taskFilters";
+import { ConfirmButton } from "../../components/ConfirmButton";
 import "./LogbookList.css";
 
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
@@ -24,6 +25,7 @@ interface LogbookListProps {
 
 export function LogbookList({ tasks }: LogbookListProps) {
   const toggleComplete = useTaskStore((s) => s.toggleComplete);
+  const clearCompleted = useTaskStore((s) => s.clearCompleted);
   const groups = groupLogbookTasks(tasks);
 
   if (groups.length === 0) {
@@ -38,6 +40,17 @@ export function LogbookList({ tasks }: LogbookListProps) {
 
   return (
     <div className="cerne-logbook">
+      <div className="cerne-logbook__toolbar">
+        <span className="text-body-small">
+          {tasks.length} {tasks.length === 1 ? "tarefa armazenada" : "tarefas armazenadas"}
+        </span>
+        <ConfirmButton
+          confirmLabel="Confirmar limpeza"
+          onConfirm={() => void clearCompleted()}
+        >
+          Limpar concluídas
+        </ConfirmButton>
+      </div>
       {groups.map((group) => (
         <div key={group.date} className="cerne-logbook__group">
           <p className="text-caption cerne-logbook__date">{formatDay(group.date)}</p>

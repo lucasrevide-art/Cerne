@@ -37,8 +37,8 @@ test("Inbox contém somente capturas ainda não processadas", () => {
   assert.equal(isInboxTask(task()), true);
   assert.equal(isInboxTask(task({ areaId: "area-1" })), false);
   assert.equal(isInboxTask(task({ projectId: "project-1" })), false);
-  assert.equal(isInboxTask(task({ when: "today" })), false);
-  assert.equal(isInboxTask(task({ deadline: "2026-08-28" })), false);
+  assert.equal(isInboxTask(task({ when: "today" })), true);
+  assert.equal(isInboxTask(task({ deadline: "2026-08-28" })), true);
   assert.equal(isInboxTask(task({ status: "completed" })), false);
 });
 
