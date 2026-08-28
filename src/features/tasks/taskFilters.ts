@@ -63,6 +63,10 @@ export function isFocusTask(task: Task): boolean {
   return isOpen(task) && task.isFocus;
 }
 
+export function isWaitingTask(task: Task): boolean {
+  return task.status === "waiting";
+}
+
 export function isLogbookTask(task: Task): boolean {
   return task.status === "completed";
 }
@@ -102,9 +106,10 @@ export function groupLogbookTasks(tasks: Task[]): LogbookGroup[] {
 
 /** Pra onde navegar ao selecionar uma tarefa na busca — a lente mais específica que a contém. */
 export function resolveTaskRoute(task: Task): Route {
+  if (task.status === "completed") return { type: "fixed", view: "logbook" };
+  if (isWaitingTask(task)) return { type: "fixed", view: "waiting" };
   if (task.projectId) return { type: "project", projectId: task.projectId };
   if (task.areaId) return { type: "area", areaId: task.areaId };
-  if (task.status === "completed") return { type: "fixed", view: "logbook" };
   if (isTodayTask(task)) return { type: "fixed", view: "today" };
   if (isUpcomingTask(task)) return { type: "fixed", view: "upcoming" };
   return { type: "fixed", view: "inbox" };

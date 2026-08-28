@@ -154,6 +154,12 @@
   color: var(--color-accent);
 }
 
+.cerne-task-preview__triage-button--waiting {
+  border-color: var(--color-warning);
+  background: color-mix(in srgb, var(--color-warning) 10%, transparent);
+  color: var(--color-warning);
+}
+
 .cerne-task-preview__triage-button--active {
   background: var(--color-selected);
 }

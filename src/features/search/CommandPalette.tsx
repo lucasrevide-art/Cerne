@@ -26,6 +26,7 @@ import {
   LogbookIcon,
   PlusIcon,
   HelpIcon,
+  WaitingIcon,
 } from "../../components/icons";
 import { resolveTaskRoute } from "../tasks/taskFilters";
 import "./CommandPalette.css";
@@ -43,6 +44,7 @@ const fixedViewCommands: { view: FixedView; label: string; icon: ReactNode }[] =
   { view: "inbox", label: "Ir para Inbox", icon: <InboxIcon width={16} height={16} /> },
   { view: "today", label: "Ir para Hoje", icon: <SunIcon width={16} height={16} /> },
   { view: "focus", label: "Ir para A Única Coisa", icon: <StarIcon width={16} height={16} /> },
+  { view: "waiting", label: "Ir para Aguardando", icon: <WaitingIcon width={16} height={16} /> },
   { view: "upcoming", label: "Ir para Próximas", icon: <UpcomingIcon width={16} height={16} /> },
   { view: "logbook", label: "Ir para Concluídas", icon: <LogbookIcon width={16} height={16} /> },
 ];
@@ -51,6 +53,7 @@ const viewLabel: Record<FixedView, string> = {
   inbox: "Inbox",
   today: "Hoje",
   focus: "A Única Coisa",
+  waiting: "Aguardando",
   upcoming: "Próximas",
   logbook: "Concluídas",
 };

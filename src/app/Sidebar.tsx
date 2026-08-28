@@ -7,7 +7,7 @@ import { useChangePasswordPanelStore } from "../store/changePasswordPanelStore";
 import { AreaNavList } from "../features/areas/AreaNavList";
 import { supabase } from "../lib/supabase/client";
 import { useTaskStore } from "../store/taskStore";
-import { isInboxTask, isTodayTask } from "../features/tasks/taskFilters";
+import { isInboxTask, isTodayTask, isWaitingTask } from "../features/tasks/taskFilters";
 import {
   InboxIcon,
   SunIcon,
@@ -20,6 +20,7 @@ import {
   LogoutIcon,
   SettingsIcon,
   ChevronRightIcon,
+  WaitingIcon,
 } from "../components/icons";
 import "./Sidebar.css";
 
@@ -33,6 +34,7 @@ const topEntries: NavEntry[] = [
   { id: "inbox", label: "Inbox", icon: InboxIcon },
   { id: "today", label: "Hoje", icon: SunIcon },
   { id: "focus", label: "A Única Coisa", icon: StarIcon },
+  { id: "waiting", label: "Aguardando", icon: WaitingIcon },
   { id: "upcoming", label: "Próximas", icon: UpcomingIcon },
 ];
 
@@ -47,6 +49,7 @@ export function Sidebar() {
   const taskCounts: Partial<Record<FixedView, number>> = {
     inbox: tasks.filter(isInboxTask).length,
     today: tasks.filter((task) => isTodayTask(task)).length,
+    waiting: tasks.filter(isWaitingTask).length,
   };
 
   return (
@@ -68,7 +71,7 @@ export function Sidebar() {
         <kbd className="cerne-sidebar__search-hint">⌘K</kbd>
       </button>
 
-      <ul className="cerne-sidebar__list cerne-sidebar__secondary">
+      <ul className="cerne-sidebar__list">
         {topEntries.map(({ id, label, icon: Icon }) => (
           <li key={id}>
             <button
@@ -98,7 +101,7 @@ export function Sidebar() {
 
       <div className="cerne-sidebar__divider" />
 
-      <ul className="cerne-sidebar__list">
+      <ul className="cerne-sidebar__list cerne-sidebar__secondary">
         <li>
           <button
             type="button"

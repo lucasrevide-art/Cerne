@@ -4,6 +4,7 @@ export type FixedView =
   | "inbox"
   | "today"
   | "focus"
+  | "waiting"
   | "upcoming"
   | "logbook";
 

@@ -10,8 +10,8 @@ import { AreaView } from "../features/areas/AreaView";
 import { ProjectView } from "../features/projects/ProjectView";
 import { UpcomingView } from "../features/upcoming/UpcomingView";
 import { TodayView } from "../features/today/TodayView";
-import { isFocusTask, isInboxTask, isLogbookTask } from "../features/tasks/taskFilters";
-import { InboxIcon, StarIcon, MenuIcon } from "../components/icons";
+import { isFocusTask, isInboxTask, isLogbookTask, isWaitingTask } from "../features/tasks/taskFilters";
+import { InboxIcon, StarIcon, WaitingIcon, MenuIcon } from "../components/icons";
 import "./MainContent.css";
 
 export function MainContent() {
@@ -70,6 +70,20 @@ export function MainContent() {
             emptyIcon={<StarIcon width={28} height={28} />}
             emptyTitle="Nada marcado como prioridade."
             emptyDescription="Abra uma tarefa e marque a estrela para definir seu foco principal."
+          />
+        );
+        break;
+      case "waiting":
+        title = "Aguardando";
+        description = "Demandas que dependem de uma resposta ou ação de terceiros.";
+        body = (
+          <TaskList
+            tasks={tasks.filter(isWaitingTask)}
+            quickAddDefaults={{ status: "waiting" }}
+            showProjectTag
+            emptyIcon={<WaitingIcon width={28} height={28} />}
+            emptyTitle="Nada aguardando no momento."
+            emptyDescription="Pause uma tarefa quando ela depender de outra pessoa."
           />
         );
         break;

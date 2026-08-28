@@ -5,6 +5,7 @@ import {
   isInboxTask,
   isOverdueTask,
   isTodayTask,
+  isWaitingTask,
   resolveTaskRoute,
 } from "../src/features/tasks/taskFilters.ts";
 import type { Task } from "../src/types/index.ts";
@@ -80,4 +81,17 @@ test("datas persistidas recebem rótulos fáceis de ler", () => {
   assert.equal(friendlyDateKey("2026-08-29", reference), "Amanhã");
   assert.match(friendlyDateKey("2026-09-02", reference), /^2 set/);
   assert.equal(friendlyDateKey("data-inválida", reference), "data-inválida");
+});
+
+test("tarefas aguardando saem das lentes acionáveis e têm rota própria", () => {
+  const waiting = task({ status: "waiting", when: "today", projectId: "project-1" });
+  assert.equal(isWaitingTask(waiting), true);
+  assert.equal(isTodayTask(waiting, "2026-08-28"), false);
+  assert.equal(isInboxTask(waiting), false);
+  assert.deepEqual(resolveTaskRoute(waiting), { type: "fixed", view: "waiting" });
+});
+
+test("tarefas concluídas abrem no histórico mesmo quando pertencem a projeto", () => {
+  const completed = task({ status: "completed", projectId: "project-1" });
+  assert.deepEqual(resolveTaskRoute(completed), { type: "fixed", view: "logbook" });
 });

@@ -3,7 +3,7 @@
  * Apenas os tipos; a Fase 1 não implementa o repositório/persistência ainda.
  */
 
-export type TaskStatus = "open" | "completed" | "canceled";
+export type TaskStatus = "open" | "waiting" | "completed" | "canceled";
 
 export type TaskWhen = "today" | "evening" | "date" | "someday" | null;
 

@@ -34,7 +34,7 @@ export const taskRepository = {
       when_type: input.when ?? null,
       when_date: input.whenDate ?? null,
       deadline: input.deadline ?? null,
-      status: "open",
+      status: input.status ?? "open",
       priority: input.priority ?? 0,
       type: input.type ?? "default",
       amount: input.amount ?? null,

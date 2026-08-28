@@ -137,55 +137,70 @@ export function TaskPreview({ task, onEdit }: TaskPreviewProps) {
         </div>
       )}
 
-      {task.status === "open" && (
+      {(task.status === "open" || task.status === "waiting") && (
         <div className="cerne-task-preview__triage" aria-label="Planejar tarefa">
           <span className="text-caption">Planejar</span>
           <div className="cerne-task-preview__triage-actions">
             <button
               type="button"
               className={`cerne-task-preview__triage-button${
-                task.when === "today" ? " cerne-task-preview__triage-button--active" : ""
+                task.status === "waiting" ? " cerne-task-preview__triage-button--waiting" : ""
               }`}
-              onClick={() => updateTask(task.id, { when: "today", whenDate: null })}
-            >
-              Hoje
-            </button>
-            <button
-              type="button"
-              className="cerne-task-preview__triage-button"
               onClick={() =>
-                updateTask(task.id, { when: "date", whenDate: tomorrowDateKey() })
+                updateTask(task.id, { status: task.status === "waiting" ? "open" : "waiting" })
               }
             >
-              Amanhã
+              {task.status === "waiting" ? "Retomar" : "Aguardando"}
             </button>
-            <select
-              className="cerne-task-preview__triage-select"
-              aria-label="Mover para área ou projeto"
-              value={task.projectId ? `project:${task.projectId}` : task.areaId ? `area:${task.areaId}` : ""}
-              onChange={(event) => {
-                const value = event.target.value;
-                if (value.startsWith("area:")) {
-                  updateTask(task.id, { areaId: value.slice(5), projectId: null });
-                } else if (value.startsWith("project:")) {
-                  updateTask(task.id, { areaId: null, projectId: value.slice(8) });
-                }
-              }}
-            >
-              <option value="">Organizar em…</option>
-              {areas.map((item) => (
-                <optgroup key={item.id} label={item.name}>
-                  <option value={`area:${item.id}`}>{item.name}</option>
-                  {projects
-                    .filter((candidate) => candidate.areaId === item.id)
-                    .map((candidate) => (
-                      <option key={candidate.id} value={`project:${candidate.id}`}>
-                        {candidate.name}
-                      </option>
-                    ))}
-                </optgroup>
-              ))}
-            </select>
+            {task.status === "open" && (
+              <>
+                <button
+                  type="button"
+                  className={`cerne-task-preview__triage-button${
+                    task.when === "today" ? " cerne-task-preview__triage-button--active" : ""
+                  }`}
+                  onClick={() => updateTask(task.id, { when: "today", whenDate: null })}
+                >
+                  Hoje
+                </button>
+                <button
+                  type="button"
+                  className="cerne-task-preview__triage-button"
+                  onClick={() =>
+                    updateTask(task.id, { when: "date", whenDate: tomorrowDateKey() })
+                  }
+                >
+                  Amanhã
+                </button>
+                <select
+                  className="cerne-task-preview__triage-select"
+                  aria-label="Mover para área ou projeto"
+                  value={task.projectId ? `project:${task.projectId}` : task.areaId ? `area:${task.areaId}` : ""}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    if (value.startsWith("area:")) {
+                      updateTask(task.id, { areaId: value.slice(5), projectId: null });
+                    } else if (value.startsWith("project:")) {
+                      updateTask(task.id, { areaId: null, projectId: value.slice(8) });
+                    }
+                  }}
+                >
+                  <option value="">Organizar em…</option>
+                  {areas.map((item) => (
+                    <optgroup key={item.id} label={item.name}>
+                      <option value={`area:${item.id}`}>{item.name}</option>
+                      {projects
+                        .filter((candidate) => candidate.areaId === item.id)
+                        .map((candidate) => (
+                          <option key={candidate.id} value={`project:${candidate.id}`}>
+                            {candidate.name}
+                          </option>
+                        ))}
+                    </optgroup>
+                  ))}
+                </select>
+              </>
+            )}
           </div>
         </div>
       )}
