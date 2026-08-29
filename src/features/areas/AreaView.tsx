@@ -24,6 +24,7 @@ export function AreaView({ areaId }: AreaViewProps) {
   const setFixedView = useNavigationStore((s) => s.setFixedView);
 
   const [notes, setNotes] = useState(area?.notes ?? "");
+  const [editingNotes, setEditingNotes] = useState(false);
   const [notesStatus, setNotesStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   // AreaView não desmonta ao trocar de área (só o prop areaId muda) — sem
@@ -34,6 +35,7 @@ export function AreaView({ areaId }: AreaViewProps) {
 
   useEffect(() => {
     setNotesStatus("idle");
+    setEditingNotes(false);
   }, [areaId]);
 
   async function commitNotes() {
@@ -42,6 +44,7 @@ export function AreaView({ areaId }: AreaViewProps) {
     try {
       await updateArea(area.id, { notes });
       setNotesStatus("saved");
+      setEditingNotes(false);
     } catch {
       setNotesStatus("error");
     }
@@ -60,31 +63,81 @@ export function AreaView({ areaId }: AreaViewProps) {
 
   return (
     <div className="cerne-area-view">
-      <textarea
-        className="cerne-area-view__notes"
-        placeholder="Notas soltas, ideias, o que quiser guardar aqui…"
-        value={notes}
-        onChange={(e) => {
-          setNotes(e.target.value);
-          setNotesStatus("idle");
-        }}
-        rows={6}
-      />
+      <section className="cerne-area-view__notepad" aria-labelledby={`area-notes-${areaId}`}>
+        <div className="cerne-area-view__notepad-header">
+          <div>
+            <h2 id={`area-notes-${areaId}`} className="text-h2">Notas da área</h2>
+            <p className="text-body-small">Informações que ficam guardadas em {area.name}.</p>
+          </div>
+          {!editingNotes && (
+            <Button variant="secondary" onClick={() => setEditingNotes(true)}>
+              {area.notes ? "Editar" : "Adicionar nota"}
+            </Button>
+          )}
+        </div>
 
-      <div className="cerne-area-view__notes-actions">
-        <span className={`cerne-area-view__notes-status cerne-area-view__notes-status--${notesStatus}`}>
-          {notesStatus === "saving" && "Salvando…"}
-          {notesStatus === "saved" && "Notas salvas"}
-          {notesStatus === "error" && "Não foi possível salvar"}
-        </span>
-        <Button
-          variant="secondary"
-          disabled={notes === area.notes || notesStatus === "saving"}
-          onClick={() => void commitNotes()}
-        >
-          Salvar notas
-        </Button>
-      </div>
+        {editingNotes ? (
+          <>
+            <textarea
+              autoFocus
+              className="cerne-area-view__notes"
+              placeholder="Ideias, referências ou informações importantes desta área…"
+              value={notes}
+              onChange={(e) => {
+                setNotes(e.target.value);
+                setNotesStatus("idle");
+              }}
+              rows={6}
+            />
+            <div className="cerne-area-view__notes-actions">
+              <span className={`cerne-area-view__notes-status cerne-area-view__notes-status--${notesStatus}`}>
+                {notesStatus === "saving" && "Salvando…"}
+                {notesStatus === "error" && "Não foi possível salvar"}
+              </span>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setNotes(area.notes);
+                  setEditingNotes(false);
+                  setNotesStatus("idle");
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button
+                variant="primary"
+                disabled={notes === area.notes || notesStatus === "saving"}
+                onClick={() => void commitNotes()}
+              >
+                Salvar
+              </Button>
+            </div>
+          </>
+        ) : area.notes ? (
+          <>
+            <p className="cerne-area-view__notes-content">{area.notes}</p>
+            <div className="cerne-area-view__notes-delete">
+              <ConfirmButton
+                confirmLabel="Confirmar exclusão da nota"
+                onConfirm={() => {
+                  void updateArea(area.id, { notes: "" });
+                  setNotes("");
+                  setNotesStatus("idle");
+                }}
+              >
+                Apagar nota
+              </ConfirmButton>
+            </div>
+          </>
+        ) : (
+          <p className="cerne-area-view__notes-empty">Nenhuma nota guardada nesta área.</p>
+        )}
+        {notesStatus === "saved" && !editingNotes && (
+          <span className="cerne-area-view__notes-status cerne-area-view__notes-status--saved">
+            Nota salva nesta área
+          </span>
+        )}
+      </section>
 
       <FinancialSummary tasks={financialScopeTasks} />
 

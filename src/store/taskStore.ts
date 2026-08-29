@@ -26,6 +26,7 @@ interface TaskState {
   loadTasks: () => Promise<void>;
   addTask: (title: string, overrides?: Partial<Task>) => Promise<void>;
   updateTask: (id: string, changes: Partial<Task>) => Promise<void>;
+  setFocusTask: (id: string | null) => Promise<void>;
   toggleComplete: (id: string) => Promise<void>;
   removeTask: (id: string) => Promise<void>;
   clearCompleted: () => Promise<void>;
@@ -69,6 +70,14 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     await taskRepository.update(id, changes);
     set((state) => ({
       tasks: state.tasks.map((t) => (t.id === id ? { ...t, ...changes } : t)),
+    }));
+  },
+
+  setFocusTask: async (id) => {
+    await taskRepository.clearFocus();
+    if (id) await taskRepository.update(id, { isFocus: true });
+    set((state) => ({
+      tasks: state.tasks.map((task) => ({ ...task, isFocus: task.id === id })),
     }));
   },
 

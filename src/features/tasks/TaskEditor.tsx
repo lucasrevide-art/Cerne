@@ -86,6 +86,12 @@ export function TaskEditor({ task, onClose, onBack }: TaskEditorProps) {
   const [notes, setNotes] = useState(task.notes);
   const [subtaskDraft, setSubtaskDraft] = useState("");
   const [tagDraft, setTagDraft] = useState("");
+  const [scheduleOptionsOpen, setScheduleOptionsOpen] = useState(
+    Boolean(task.deadline || recurrence),
+  );
+  const [classificationOptionsOpen, setClassificationOptionsOpen] = useState(
+    task.priority > 0 || task.type === "financial",
+  );
 
   function toggleTaskTag(tagId: string) {
     const next = task.tagIds.includes(tagId)
@@ -233,21 +239,28 @@ export function TaskEditor({ task, onClose, onBack }: TaskEditorProps) {
         )}
       </div>
 
-      <div className="cerne-task-editor__field">
-        <span className="text-caption">Prazo</span>
-        <input
-          type="date"
-          className="cerne-task-editor__date"
-          value={task.deadline ?? ""}
-          onChange={(e) =>
-            updateTask(task.id, { deadline: e.target.value || null })
-          }
-        />
-      </div>
+      <details
+        className="cerne-task-editor__optional"
+        open={scheduleOptionsOpen}
+        onToggle={(event) => setScheduleOptionsOpen(event.currentTarget.open)}
+      >
+        <summary>Prazo e repetição</summary>
+        <div className="cerne-task-editor__optional-content">
+          <div className="cerne-task-editor__field">
+            <span className="text-caption">Prazo</span>
+            <input
+              type="date"
+              className="cerne-task-editor__date"
+              value={task.deadline ?? ""}
+              onChange={(e) =>
+                updateTask(task.id, { deadline: e.target.value || null })
+              }
+            />
+          </div>
 
-      <div className="cerne-task-editor__field">
-        <span className="text-caption">Recorrência</span>
-        <div className="cerne-task-editor__segmented">
+          <div className="cerne-task-editor__field">
+            <span className="text-caption">Recorrência</span>
+            <div className="cerne-task-editor__segmented">
           {recurrenceBucketOptions.map((opt) => (
             <button
               key={opt.value}
@@ -260,9 +273,9 @@ export function TaskEditor({ task, onClose, onBack }: TaskEditorProps) {
               {opt.label}
             </button>
           ))}
-        </div>
-        {recurrenceBucket !== "none" && (
-          <div className="cerne-task-editor__recurrence-detail">
+            </div>
+            {recurrenceBucket !== "none" && (
+              <div className="cerne-task-editor__recurrence-detail">
             <span>A cada</span>
             <input
               type="number"
@@ -272,10 +285,10 @@ export function TaskEditor({ task, onClose, onBack }: TaskEditorProps) {
               onChange={(e) => changeRecurrenceInterval(Number(e.target.value))}
             />
             <span>{recurrenceUnit[recurrenceBucket]}</span>
-          </div>
-        )}
-        {recurrenceBucket === "weekly" && (
-          <div className="cerne-task-editor__segmented">
+              </div>
+            )}
+            {recurrenceBucket === "weekly" && (
+              <div className="cerne-task-editor__segmented">
             {weekdayOptions.map((day) => (
               <button
                 key={day.value}
@@ -290,9 +303,11 @@ export function TaskEditor({ task, onClose, onBack }: TaskEditorProps) {
                 {day.label}
               </button>
             ))}
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      </details>
 
       <div className="cerne-task-editor__field">
         <span className="text-caption">Área / Projeto</span>
@@ -364,9 +379,16 @@ export function TaskEditor({ task, onClose, onBack }: TaskEditorProps) {
         </form>
       </div>
 
-      <div className="cerne-task-editor__field">
-        <span className="text-caption">Prioridade</span>
-        <div className="cerne-task-editor__segmented">
+      <details
+        className="cerne-task-editor__optional"
+        open={classificationOptionsOpen}
+        onToggle={(event) => setClassificationOptionsOpen(event.currentTarget.open)}
+      >
+        <summary>Prioridade e financeiro</summary>
+        <div className="cerne-task-editor__optional-content">
+          <div className="cerne-task-editor__field">
+            <span className="text-caption">Prioridade</span>
+            <div className="cerne-task-editor__segmented">
           {priorityOptions.map((opt) => (
             <button
               key={opt.value}
@@ -381,12 +403,12 @@ export function TaskEditor({ task, onClose, onBack }: TaskEditorProps) {
               {opt.label}
             </button>
           ))}
-        </div>
-      </div>
+            </div>
+          </div>
 
-      <div className="cerne-task-editor__field">
-        <span className="text-caption">Tipo</span>
-        <div className="cerne-task-editor__segmented">
+          <div className="cerne-task-editor__field">
+            <span className="text-caption">Tipo</span>
+            <div className="cerne-task-editor__segmented">
           <button
             type="button"
             className={`cerne-task-editor__segment${
@@ -405,9 +427,9 @@ export function TaskEditor({ task, onClose, onBack }: TaskEditorProps) {
           >
             Financeiro
           </button>
-        </div>
-        {task.type === "financial" && (
-          <div className="cerne-task-editor__financial">
+            </div>
+            {task.type === "financial" && (
+              <div className="cerne-task-editor__financial">
             <div className="cerne-task-editor__amount">
               <span>R$</span>
               <input
@@ -438,9 +460,11 @@ export function TaskEditor({ task, onClose, onBack }: TaskEditorProps) {
                 <option key={c} value={c} />
               ))}
             </datalist>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      </details>
 
       <div className="cerne-task-editor__field">
         <span className="text-caption">Subtarefas</span>

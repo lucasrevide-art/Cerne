@@ -38,8 +38,10 @@ export function TaskRow({
         {completed && <CheckIcon width={12} height={12} />}
       </button>
       {leading && <span className="cerne-task-row__leading">{leading}</span>}
-      <span className="cerne-task-row__title">{title}</span>
-      {metadata && <span className="cerne-task-row__metadata">{metadata}</span>}
+      <span className="cerne-task-row__content">
+        <span className="cerne-task-row__title">{title}</span>
+        {metadata && <span className="cerne-task-row__metadata">{metadata}</span>}
+      </span>
     </div>
   );
 }

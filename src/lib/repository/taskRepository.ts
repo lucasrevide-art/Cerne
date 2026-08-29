@@ -57,6 +57,11 @@ export const taskRepository = {
     if (error) throw error;
   },
 
+  async clearFocus(): Promise<void> {
+    const { error } = await supabase.from("tasks").update({ is_focus: false }).eq("is_focus", true);
+    if (error) throw error;
+  },
+
   async complete(id: string): Promise<void> {
     const { error } = await supabase
       .from("tasks")

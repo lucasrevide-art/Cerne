@@ -25,22 +25,24 @@ export function TodayView() {
 
   return (
     <div className="cerne-today-view">
-      <div className="cerne-today-view__filters" aria-label="Filtros de Hoje">
-        {filters.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            className={`cerne-today-view__filter${
-              filter === item.id ? " cerne-today-view__filter--active" : ""
-            }${item.id === "overdue" && item.count > 0 ? " cerne-today-view__filter--danger" : ""}`}
-            aria-pressed={filter === item.id}
-            onClick={() => setFilter(item.id)}
-          >
-            {item.label}
-            <span>{item.count}</span>
-          </button>
-        ))}
-      </div>
+      {overdueTasks.length > 0 && (
+        <div className="cerne-today-view__filters" aria-label="Filtros de Hoje">
+          {filters.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className={`cerne-today-view__filter${
+                filter === item.id ? " cerne-today-view__filter--active" : ""
+              }${item.id === "overdue" && item.count > 0 ? " cerne-today-view__filter--danger" : ""}`}
+              aria-pressed={filter === item.id}
+              onClick={() => setFilter(item.id)}
+            >
+              {item.label}
+              <span>{item.count}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       <TaskList
         tasks={visibleTasks}

@@ -37,6 +37,7 @@ interface TaskPreviewProps {
 export function TaskPreview({ task, onEdit }: TaskPreviewProps) {
   const toggleComplete = useTaskStore((s) => s.toggleComplete);
   const updateTask = useTaskStore((s) => s.updateTask);
+  const setFocusTask = useTaskStore((s) => s.setFocusTask);
   const subtasks = useTaskStore((s) => s.subtasksByTask[task.id] ?? EMPTY_SUBTASKS);
   const toggleSubtask = useTaskStore((s) => s.toggleSubtask);
   const recurrence = useTaskStore((s) => s.recurrencesByTask[task.id]);
@@ -92,7 +93,7 @@ export function TaskPreview({ task, onEdit }: TaskPreviewProps) {
           className={`cerne-task-preview__focus${task.isFocus ? " cerne-task-preview__focus--active" : ""}`}
           aria-label={task.isFocus ? "Tirar de A Única Coisa" : "Marcar como A Única Coisa"}
           aria-pressed={task.isFocus}
-          onClick={() => updateTask(task.id, { isFocus: !task.isFocus })}
+          onClick={() => void setFocusTask(task.isFocus ? null : task.id)}
         >
           {task.isFocus ? <StarFilledIcon width={16} height={16} /> : <StarIcon width={16} height={16} />}
         </button>

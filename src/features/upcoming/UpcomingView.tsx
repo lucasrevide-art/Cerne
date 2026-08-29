@@ -37,6 +37,7 @@ export function UpcomingView() {
       />
       <TaskList
         tasks={visibleTasks}
+        showProjectTag
         hideQuickAdd={!selectedDate}
         quickAddDefaults={selectedDate ? { when: "date", whenDate: selectedDate } : undefined}
         emptyIcon={<UpcomingIcon width={28} height={28} />}
