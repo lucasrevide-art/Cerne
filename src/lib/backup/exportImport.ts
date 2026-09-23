@@ -1,6 +1,6 @@
 import { db } from "../repository/db";
 import { supabase } from "../supabase/client";
-import type { Task, Subtask, Area, Project, Recurrence } from "../../types";
+import type { Task, Subtask, Area, Project, Recurrence, Note } from "../../types";
 
 /**
  * Backup — agora contra o Supabase (a fonte de verdade depois da migração
@@ -19,6 +19,8 @@ interface CerneBackup {
   areas: Area[];
   projects: Project[];
   recurrences: Recurrence[];
+  /** Opcional — backups de antes dessa tabela existir não têm esse campo. */
+  notes?: Note[];
 }
 
 function downloadJson(backup: CerneBackup) {
@@ -39,7 +41,9 @@ function isCerneBackup(value: unknown): value is CerneBackup {
     Array.isArray(v.subtasks) &&
     Array.isArray(v.areas) &&
     Array.isArray(v.projects) &&
-    Array.isArray(v.recurrences)
+    Array.isArray(v.recurrences) &&
+    // notes é opcional — backups de antes dessa tabela existir continuam válidos.
+    (v.notes === undefined || Array.isArray(v.notes))
   );
 }
 
@@ -48,14 +52,15 @@ function isCerneBackup(value: unknown): value is CerneBackup {
 // ---------------------------------------------------------------------
 
 export async function exportBackup(): Promise<void> {
-  const [tasksRes, subtasksRes, areasRes, projectsRes, recurrencesRes] = await Promise.all([
+  const [tasksRes, subtasksRes, areasRes, projectsRes, recurrencesRes, notesRes] = await Promise.all([
     supabase.from("tasks").select("*"),
     supabase.from("subtasks").select("*"),
     supabase.from("areas").select("*"),
     supabase.from("projects").select("*"),
     supabase.from("recurrences").select("*"),
+    supabase.from("notes").select("*"),
   ]);
-  for (const res of [tasksRes, subtasksRes, areasRes, projectsRes, recurrencesRes]) {
+  for (const res of [tasksRes, subtasksRes, areasRes, projectsRes, recurrencesRes, notesRes]) {
     if (res.error) throw res.error;
   }
 
@@ -94,7 +99,6 @@ export async function exportBackup(): Promise<void> {
       name: row.name,
       color: row.color,
       icon: row.icon,
-      notes: row.notes,
       sortOrder: row.sort_order,
     })),
     projects: (projectsRes.data ?? []).map((row) => ({
@@ -114,6 +118,13 @@ export async function exportBackup(): Promise<void> {
       weekdays: row.weekdays ?? [],
       nextDate: row.next_date,
     })),
+    notes: (notesRes.data ?? []).map((row) => ({
+      id: row.id,
+      areaId: row.area_id,
+      body: row.body,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    })),
   });
 }
 
@@ -132,7 +143,6 @@ export async function importBackup(file: File): Promise<void> {
         name: a.name,
         color: a.color,
         icon: a.icon,
-        notes: a.notes,
         sort_order: a.sortOrder,
       })),
     );
@@ -202,6 +212,18 @@ export async function importBackup(file: File): Promise<void> {
     );
     if (error) throw error;
   }
+  if (parsed.notes && parsed.notes.length) {
+    const { error } = await supabase.from("notes").upsert(
+      parsed.notes.map((n) => ({
+        id: n.id,
+        area_id: n.areaId,
+        body: n.body,
+        created_at: n.createdAt,
+        updated_at: n.updatedAt,
+      })),
+    );
+    if (error) throw error;
+  }
 }
 
 // ---------------------------------------------------------------------
@@ -232,7 +254,6 @@ export async function migrateLocalToCloud(): Promise<MigrationResult> {
         name: a.name,
         color: a.color,
         icon: a.icon,
-        notes: a.notes,
         sort_order: a.sortOrder,
       })),
     );

@@ -63,7 +63,6 @@ export interface Area {
   name: string;
   color: string;
   icon: string;
-  notes: string;
   sortOrder: number;
 }
 
@@ -92,11 +91,12 @@ export interface Reminder {
   dismissed: boolean;
 }
 
+/** Nota independente dentro de uma área — cada uma é seu próprio registro (como no app Notas do macOS), não um texto único compartilhado. */
 export interface Note {
   id: string;
-  taskId: string | null;
-  projectId: string | null;
+  areaId: string;
   body: string;
+  createdAt: string;
   updatedAt: string;
 }
 

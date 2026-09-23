@@ -14,7 +14,7 @@ export const areaRepository = {
   },
 
   async create(name: string): Promise<Area> {
-    const row = { id: createId(), name, color: "", icon: "", notes: "", sort_order: Date.now() };
+    const row = { id: createId(), name, color: "", icon: "", sort_order: Date.now() };
     const { data, error } = await supabase.from("areas").insert(row).select().single();
     if (error) throw error;
     return areaFromRow(data as AreaRow);
@@ -25,7 +25,6 @@ export const areaRepository = {
     if (changes.name !== undefined) row.name = changes.name;
     if (changes.color !== undefined) row.color = changes.color;
     if (changes.icon !== undefined) row.icon = changes.icon;
-    if (changes.notes !== undefined) row.notes = changes.notes;
     if (changes.sortOrder !== undefined) row.sort_order = changes.sortOrder;
     if (Object.keys(row).length === 0) return;
     const { error } = await supabase.from("areas").update(row).eq("id", id);

@@ -1,0 +1,39 @@
+.cerne-note-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 480px;
+  max-width: 90vw;
+  height: 520px;
+  max-height: 80vh;
+  padding: var(--space-5);
+}
+
+.cerne-note-editor__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.cerne-note-editor__date {
+  font-size: var(--text-caption-size);
+  color: var(--color-text-tertiary);
+}
+
+.cerne-note-editor__body {
+  flex: 1;
+  width: 100%;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+}
+
+.cerne-note-editor__body::placeholder {
+  color: var(--color-text-tertiary);
+}

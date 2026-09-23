@@ -1,4 +1,4 @@
-import type { Task, Subtask, Area, Project, Recurrence, Tag } from "../../types";
+import type { Task, Subtask, Area, Project, Recurrence, Tag, Note } from "../../types";
 
 /**
  * Conversão entre o formato do banco (snake_case, Postgres) e os tipos de
@@ -11,7 +11,6 @@ export interface AreaRow {
   name: string;
   color: string;
   icon: string;
-  notes: string;
   sort_order: number;
 }
 
@@ -21,7 +20,6 @@ export function areaFromRow(row: AreaRow): Area {
     name: row.name,
     color: row.color,
     icon: row.icon,
-    notes: row.notes,
     sortOrder: row.sort_order,
   };
 }
@@ -31,7 +29,6 @@ export function areaToRow(area: Partial<Area>): Record<string, unknown> {
   if (area.name !== undefined) row.name = area.name;
   if (area.color !== undefined) row.color = area.color;
   if (area.icon !== undefined) row.icon = area.icon;
-  if (area.notes !== undefined) row.notes = area.notes;
   if (area.sortOrder !== undefined) row.sort_order = area.sortOrder;
   return row;
 }
@@ -180,4 +177,22 @@ export interface TagRow {
 
 export function tagFromRow(row: TagRow): Tag {
   return { id: row.id, name: row.name, color: row.color };
+}
+
+export interface NoteRow {
+  id: string;
+  area_id: string;
+  body: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export function noteFromRow(row: NoteRow): Note {
+  return {
+    id: row.id,
+    areaId: row.area_id,
+    body: row.body,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
 }

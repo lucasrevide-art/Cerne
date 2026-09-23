@@ -9,6 +9,7 @@ import { useTaskStore } from "./store/taskStore";
 import { useAreaStore } from "./store/areaStore";
 import { useProjectStore } from "./store/projectStore";
 import { useTagStore } from "./store/tagStore";
+import { useNoteStore } from "./store/noteStore";
 import "./App.css";
 
 type DataStatus = "idle" | "loading" | "ready" | "error";
@@ -58,6 +59,7 @@ function App() {
   const loadAreas = useAreaStore((s) => s.loadAreas);
   const loadProjects = useProjectStore((s) => s.loadProjects);
   const loadTags = useTagStore((s) => s.loadTags);
+  const loadNotes = useNoteStore((s) => s.loadNotes);
 
   useEffect(() => {
     if (!supabaseConfigured) {
@@ -85,7 +87,7 @@ function App() {
 
     let active = true;
     setDataStatus("loading");
-    Promise.all([loadTasks(), loadAreas(), loadProjects(), loadTags()])
+    Promise.all([loadTasks(), loadAreas(), loadProjects(), loadTags(), loadNotes()])
       .then(() => {
         if (active) setDataStatus("ready");
       })
@@ -95,7 +97,7 @@ function App() {
     return () => {
       active = false;
     };
-  }, [userId, recoveryMode, retryAttempt, loadTasks, loadAreas, loadProjects, loadTags]);
+  }, [userId, recoveryMode, retryAttempt, loadTasks, loadAreas, loadProjects, loadTags, loadNotes]);
 
   if (session === undefined) return <StartupState status="loading" />;
   if (recoveryMode) return <ResetPassword onDone={() => setRecoveryMode(false)} />;
