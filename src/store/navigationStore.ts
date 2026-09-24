@@ -6,6 +6,7 @@ export type FixedView =
   | "focus"
   | "waiting"
   | "upcoming"
+  | "agenda"
   | "logbook";
 
 export type Route =

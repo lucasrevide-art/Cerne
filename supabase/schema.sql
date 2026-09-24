@@ -60,6 +60,8 @@ create table tasks (
   area_id uuid references areas(id) on delete set null,
   tag_ids uuid[] not null default '{}',
   is_focus boolean not null default false,
+  start_time text,
+  duration_minutes integer,
   created_at timestamptz not null default now(),
   completed_at timestamptz,
   sort_order double precision not null default (extract(epoch from now()) * 1000)

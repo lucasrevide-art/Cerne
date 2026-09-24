@@ -12,11 +12,24 @@ export function tomorrowDateKey(date = new Date()): string {
   return localDateKey(tomorrow);
 }
 
-function dateFromKey(dateKey: string): Date | null {
+export function dateFromKey(dateKey: string): Date | null {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateKey);
   if (!match) return null;
   const [, year, month, day] = match;
   return new Date(Number(year), Number(month) - 1, Number(day));
+}
+
+/** Soma (ou subtrai, com dias negativos) dias a uma data no formato YYYY-MM-DD. */
+export function addDays(dateKey: string, days: number): string {
+  const date = dateFromKey(dateKey) ?? new Date();
+  date.setDate(date.getDate() + days);
+  return localDateKey(date);
+}
+
+/** Início da semana (domingo) que contém a data — usado pela view Agenda. */
+export function startOfWeekKey(dateKey: string): string {
+  const date = dateFromKey(dateKey) ?? new Date();
+  return addDays(dateKey, -date.getDay());
 }
 
 /** Rótulo curto e humano para datas persistidas no formato YYYY-MM-DD. */

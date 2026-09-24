@@ -23,6 +23,7 @@ import {
   SunIcon,
   StarIcon,
   UpcomingIcon,
+  AgendaIcon,
   LogbookIcon,
   PlusIcon,
   HelpIcon,
@@ -46,6 +47,7 @@ const fixedViewCommands: { view: FixedView; label: string; icon: ReactNode }[] =
   { view: "focus", label: "Ir para A Única Coisa", icon: <StarIcon width={16} height={16} /> },
   { view: "waiting", label: "Ir para Aguardando", icon: <WaitingIcon width={16} height={16} /> },
   { view: "upcoming", label: "Ir para Próximas", icon: <UpcomingIcon width={16} height={16} /> },
+  { view: "agenda", label: "Ir para Agenda", icon: <AgendaIcon width={16} height={16} /> },
   { view: "logbook", label: "Ir para Concluídas", icon: <LogbookIcon width={16} height={16} /> },
 ];
 
@@ -55,6 +57,7 @@ const viewLabel: Record<FixedView, string> = {
   focus: "A Única Coisa",
   waiting: "Aguardando",
   upcoming: "Próximas",
+  agenda: "Agenda",
   logbook: "Concluídas",
 };
 

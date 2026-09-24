@@ -1,0 +1,38 @@
+.cerne-agenda-quick-create {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-height: 22px;
+  padding: 3px 6px;
+  border-radius: var(--radius-control);
+  background: var(--color-accent);
+  box-shadow: var(--shadow-overlay);
+}
+
+.cerne-agenda-quick-create form {
+  display: flex;
+}
+
+.cerne-agenda-quick-create__input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--color-accent-contrast);
+  font-size: var(--text-body-small-size);
+  font-weight: 500;
+}
+
+.cerne-agenda-quick-create__input::placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.cerne-agenda-quick-create__time {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.85);
+}

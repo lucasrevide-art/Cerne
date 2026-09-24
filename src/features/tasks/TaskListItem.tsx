@@ -36,7 +36,11 @@ const currencyFormatter = new Intl.NumberFormat("pt-BR", {
 function formatMetadataText(task: Task): string | null {
   const parts: string[] = [];
   if (task.when === "date" && task.whenDate) {
-    parts.push(friendlyDateKey(task.whenDate));
+    parts.push(
+      task.startTime
+        ? `${friendlyDateKey(task.whenDate)} · ${task.startTime}`
+        : friendlyDateKey(task.whenDate),
+    );
   } else if (task.when && whenLabel[task.when]) {
     parts.push(whenLabel[task.when]);
   }

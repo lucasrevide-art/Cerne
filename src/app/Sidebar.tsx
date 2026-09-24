@@ -13,6 +13,7 @@ import {
   SunIcon,
   StarIcon,
   UpcomingIcon,
+  AgendaIcon,
   LogbookIcon,
   SearchIcon,
   BackupIcon,
@@ -36,6 +37,7 @@ const topEntries: NavEntry[] = [
   { id: "focus", label: "A Única Coisa", icon: StarIcon },
   { id: "waiting", label: "Aguardando", icon: WaitingIcon },
   { id: "upcoming", label: "Próximas", icon: UpcomingIcon },
+  { id: "agenda", label: "Agenda", icon: AgendaIcon },
 ];
 
 export function Sidebar() {

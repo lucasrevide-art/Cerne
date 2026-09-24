@@ -42,6 +42,15 @@ export function UpcomingIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function AgendaIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="9" cy="9" r="6.25" />
+      <path d="M9 5.5V9l2.5 1.5" />
+    </svg>
+  );
+}
+
 export function AnytimeIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...props}>

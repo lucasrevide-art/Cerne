@@ -10,6 +10,7 @@ import { AreaView } from "../features/areas/AreaView";
 import { ProjectView } from "../features/projects/ProjectView";
 import { UpcomingView } from "../features/upcoming/UpcomingView";
 import { TodayView } from "../features/today/TodayView";
+import { AgendaView } from "../features/agenda/AgendaView";
 import { isFocusTask, isInboxTask, isLogbookTask, isWaitingTask } from "../features/tasks/taskFilters";
 import { InboxIcon, StarIcon, WaitingIcon, MenuIcon } from "../components/icons";
 import "./MainContent.css";
@@ -91,6 +92,11 @@ export function MainContent() {
         title = "Próximas";
         description = "O que vem pela frente.";
         body = <UpcomingView />;
+        break;
+      case "agenda":
+        title = "Agenda";
+        description = "Organize seu dia em blocos de tempo — arraste na grade pra criar um.";
+        body = <AgendaView />;
         break;
       case "logbook":
         title = "Concluídas";

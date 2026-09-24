@@ -236,6 +236,37 @@
   font-size: var(--text-body-small-size);
 }
 
+.cerne-task-editor__time-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.cerne-task-editor__time {
+  width: fit-content;
+  height: 32px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-control);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: var(--text-body-small-size);
+}
+
+.cerne-task-editor__duration {
+  width: 56px;
+  height: 32px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-control);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: var(--text-body-small-size);
+}
+
 .cerne-task-editor__tags {
   display: flex;
   flex-wrap: wrap;

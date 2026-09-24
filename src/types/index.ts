@@ -26,6 +26,10 @@ export interface Task {
   tagIds: string[];
   /** Marca a tarefa como "A Única Coisa" — o subconjunto priorizado agora, independente de área/projeto. */
   isFocus: boolean;
+  /** Horário de início do bloco de tempo na Agenda ("HH:mm"); null = tarefa sem horário marcado. */
+  startTime: string | null;
+  /** Duração do bloco de tempo, em minutos; só tem sentido junto de startTime. */
+  durationMinutes: number | null;
   createdAt: string;
   completedAt: string | null;
   sortOrder: number;

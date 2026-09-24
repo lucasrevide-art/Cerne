@@ -237,6 +237,38 @@ export function TaskEditor({ task, onClose, onBack }: TaskEditorProps) {
             }
           />
         )}
+        {task.when === "date" && task.whenDate && (
+          <div className="cerne-task-editor__time-row">
+            <input
+              type="time"
+              className="cerne-task-editor__time"
+              value={task.startTime ?? ""}
+              onChange={(e) =>
+                updateTask(task.id, {
+                  startTime: e.target.value || null,
+                  durationMinutes: e.target.value ? (task.durationMinutes ?? 30) : null,
+                })
+              }
+              aria-label="Horário de início (bloco na Agenda)"
+            />
+            {task.startTime && (
+              <>
+                <input
+                  type="number"
+                  min={5}
+                  step={5}
+                  className="cerne-task-editor__duration"
+                  value={task.durationMinutes ?? 30}
+                  onChange={(e) =>
+                    updateTask(task.id, { durationMinutes: Math.max(5, Number(e.target.value)) })
+                  }
+                  aria-label="Duração em minutos"
+                />
+                <span className="text-caption">min</span>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       <details

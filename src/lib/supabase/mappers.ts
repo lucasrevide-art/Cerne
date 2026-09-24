@@ -82,6 +82,8 @@ export interface TaskRow {
   area_id: string | null;
   tag_ids: string[];
   is_focus: boolean;
+  start_time: string | null;
+  duration_minutes: number | null;
   created_at: string;
   completed_at: string | null;
   sort_order: number;
@@ -104,6 +106,8 @@ export function taskFromRow(row: TaskRow): Task {
     areaId: row.area_id,
     tagIds: row.tag_ids ?? [],
     isFocus: row.is_focus ?? false,
+    startTime: row.start_time ?? null,
+    durationMinutes: row.duration_minutes ?? null,
     createdAt: row.created_at,
     completedAt: row.completed_at,
     sortOrder: row.sort_order,
@@ -126,6 +130,8 @@ export function taskToRow(task: Partial<Task>): Record<string, unknown> {
   if (task.areaId !== undefined) row.area_id = task.areaId;
   if (task.tagIds !== undefined) row.tag_ids = task.tagIds;
   if (task.isFocus !== undefined) row.is_focus = task.isFocus;
+  if (task.startTime !== undefined) row.start_time = task.startTime;
+  if (task.durationMinutes !== undefined) row.duration_minutes = task.durationMinutes;
   if (task.completedAt !== undefined) row.completed_at = task.completedAt;
   if (task.sortOrder !== undefined) row.sort_order = task.sortOrder;
   return row;

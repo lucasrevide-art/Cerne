@@ -43,6 +43,8 @@ export const taskRepository = {
       area_id: input.areaId ?? null,
       tag_ids: input.tagIds ?? [],
       is_focus: input.isFocus ?? false,
+      start_time: input.startTime ?? null,
+      duration_minutes: input.durationMinutes ?? null,
       sort_order: Date.now(),
     };
     const { data, error } = await supabase.from("tasks").insert(row).select().single();
