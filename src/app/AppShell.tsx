@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect } from "react";
 import { Sidebar } from "./Sidebar";
 import { MainContent } from "./MainContent";
 import { PomodoroWidget } from "../features/pomodoro/PomodoroWidget";
+import { VoiceWidget } from "../features/voice/VoiceWidget";
 import { useNavigationStore } from "../store/navigationStore";
 import { useUiStore } from "../store/uiStore";
 import { useCommandPaletteStore } from "../store/commandPaletteStore";
@@ -75,6 +76,7 @@ export function AppShell() {
       )}
       <MainContent />
       <PomodoroWidget />
+      <VoiceWidget />
       <Suspense fallback={null}>
         {commandPaletteOpen && <CommandPalette />}
         {shortcutsHelpOpen && <ShortcutsHelp />}

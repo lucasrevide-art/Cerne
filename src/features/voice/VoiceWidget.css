@@ -1,0 +1,136 @@
+.cerne-voice {
+  position: fixed;
+  right: calc(var(--space-5) + 44px + var(--space-3));
+  bottom: var(--space-5);
+  z-index: 40;
+}
+
+.cerne-voice__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  box-shadow: var(--shadow-overlay);
+  cursor: pointer;
+  transition: color var(--motion-duration-fast) var(--motion-ease),
+    border-color var(--motion-duration-fast) var(--motion-ease);
+}
+
+.cerne-voice__trigger:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.cerne-voice__panel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 44px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-overlay);
+  font-size: var(--text-body-small-size);
+  color: var(--color-text-primary);
+}
+
+.cerne-voice__panel--error {
+  max-width: 280px;
+  height: auto;
+  min-height: 44px;
+  border-radius: var(--radius-card);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.cerne-voice__pulse {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-danger);
+  animation: cerne-voice-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes cerne-voice-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.75);
+  }
+}
+
+.cerne-voice__timer {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
+}
+
+.cerne-voice__stop,
+.cerne-voice__cancel {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.cerne-voice__stop {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+}
+
+.cerne-voice__cancel {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.cerne-voice__cancel:hover {
+  color: var(--color-danger);
+}
+
+.cerne-voice__stop:hover {
+  opacity: 0.85;
+}
+
+.cerne-voice__spinner {
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-accent);
+  animation: cerne-voice-spin 0.7s linear infinite;
+}
+
+@keyframes cerne-voice-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.cerne-voice__retry {
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: var(--text-body-small-size);
+}

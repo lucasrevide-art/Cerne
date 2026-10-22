@@ -42,6 +42,15 @@ export function UpcomingIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function MicIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="6.75" y="2.25" width="4.5" height="8.5" rx="2.25" />
+      <path d="M4 8.75a5 5 0 0 0 10 0M9 14v2M6.75 16h4.5" />
+    </svg>
+  );
+}
+
 export function AgendaIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...props}>
